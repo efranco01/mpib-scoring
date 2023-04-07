@@ -1,0 +1,10 @@
+69	Raben
+96	Fichten
+70	Brillen
+84	Schalen
+53	Kartons
+76	Kelche
+28	Schäfer
+51	Pfeifen
+15	Henkel
+42	Strudel
