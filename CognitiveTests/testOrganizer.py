@@ -4,8 +4,14 @@ import shutil
 # Get the ID to search for
 id_to_search = input("Enter the ID to search for: ")
 
-# Get the current working directory
-current_dir = os.getcwd()
+# Get the absolute path of the current script file
+current_script_path = os.path.abspath(__file__)
+
+# Get the directory containing the script file
+current_dir = os.path.dirname(current_script_path)
+
+# Change the current working directory to the script directory
+os.chdir(current_dir)
 
 # Create a subdirectory with the input ID as the name
 sub_dir = os.path.join(current_dir, id_to_search)
