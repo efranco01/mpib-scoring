@@ -1,6 +1,9 @@
 import os
 import shutil
 
+# TODO: Search for Scored files, if not placed in subdirectory, place them
+# TODO: Print logs stating what is being done
+
 # Get the ID to search for
 id_to_search = input("Enter the ID to search for: ")
 
