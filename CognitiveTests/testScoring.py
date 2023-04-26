@@ -1,16 +1,30 @@
 # INPUT:
 # TODO: Build simple ui or just use terminal for inputs
 # TODO: Allow for more in-depth customization in args (argparse)
+# TODO: Make script into executable (pyinstaller)
+# TODO: Allow running DEFAULT and OVERRIDE (e.g. default is all tests, override is only selected plus other customizations)
 
 # SCORING:
 # TODO: Score distance using city block method (will be in the nitty gritty area)
-# TODO: Score avg distance across trials (will be in the nitty gritty area)
+# TODO: Score avg distance across blocks (will be in the nitty gritty area)
 # TODO: The PRACT subset only has 3 instead of 4 inputs! (fix this)
+# TODO: Add additional scoring methods (e.g. avg distance from correct block)
+# TODO: Check for 0 in response time (this likely indicates a lack of response)
 
 # OUTPUT:
 # TODO: Display more in-depth details further along (horizontal)
 # TODO: Display avg distance from correct block (incorrect answers) in the 
-# TODO: Print LOGS stating what is being done
+# TODO: Change csv file names to be more descriptive also change column names to be shorter
+# TODO: Add 0s to "invalid responses" column
+# TODO: Word recall add incorrect responses
+# TODO: LU add mean streak length correct vs incorrect
+# TODO: VS add failure for same and different
+# TODO: MS sort errors by square
+# TODO: Maybe add a column for interesting response time values (e.g. 0, 9999, etc.)
+# TODO:
+
+# OTHER:
+# TODO: Compile as executable for MAC and PC
 
 import numpy as np
 import pandas as pd
@@ -32,72 +46,97 @@ class Util:
                 files_found.append(file)
 
         if len(files_found) == 0:
-            print(f'No TXT file named {testName} found in current directory')
+            log.info(f'No TXT file named {testName} found in current directory')
             return None
         elif len(files_found) == 1:
             # If a TXT file is found, read it into a Pandas dataframe
             df = pd.read_csv(os.path.join(self.currentDir, files_found[0]), delimiter='\t')
-            print(f'Successfully read file: {files_found[0]}')
+            (f'Successfully read file: {files_found[0]}')
             return df
         else:
-            print(f'{len(files_found)} files with the name {testName} found in current directory:')
+            log.info(f'{len(files_found)} files with the name {testName} found in current directory:')
             for i, file in enumerate(files_found):
-                print(f'{i+1}. {file}')
+                log.info(f'{i+1}. {file}')
             selection = input('Please select the file you want to read (enter number): ')
             try:
                 selection = int(selection)
             except:
-                print('Invalid input, please enter a number.')
+                log.info('Invalid input, please enter a number.')
                 return None
             if selection > 0 and selection <= len(files_found):
                 df = pd.read_csv(os.path.join(self.currentDir, files_found[selection-1]), delimiter='\t')
-                print(f'Successfully read file: {files_found[selection-1]}')
+                log.info(f'Successfully read file: {files_found[selection-1]}')
                 return df
             else:
-                print(f'Invalid selection: {selection}. Please enter a number between 1 and {len(files_found)}.')
+                log.info(f'Invalid selection: {selection}. Please enter a number between 1 and {len(files_found)}.')
                 return None
 
-    def getTrialType(self, df=pd.DataFrame, trialLoc=4):
+    def getBlockType(self, df=pd.DataFrame, blockLoc=4):
         
-        # List different types of trials in the dataframe
-        trialTypes = df.iloc[:, trialLoc].unique()
+        # List different types of blocks in the dataframe
+        blockTypes = df.iloc[:, blockLoc].unique()
         
-        return trialTypes
+        return blockTypes
     
-    def subsetByTrial(self, df=pd.DataFrame, trialTypes=np.ndarray, trialLoc=4):
+    def subsetByBlock(self, df=pd.DataFrame, blockTypes=np.ndarray, blockLoc=4):
         
         # Create a list to hold the subsetted dataframes
         subsetList = []
         
-        # Subset data based on trial number
-        for trial in trialTypes:
-            # Create a new dataframe for each trial type
-            trialDf = df[df.iloc[:, trialLoc] == trial]
+        # Subset data based on block number
+        for block in blockTypes:
+            # Create a new dataframe for each block type
+            blockDf = df[df.iloc[:, blockLoc] == block]
             
             # Add each dataframe to a list
-            subsetList.append(trialDf)
+            subsetList.append(blockDf)
         
         # Return the list of dataframes
         return subsetList
 
-    def makeScoredDir(self):
+    def getTestID(self):
+
+        # get test ID from directory name
+        testID = os.path.basename(self.currentDir)
+        log.info(f'Test ID: {testID}')
+        return testID
+
+    def makeScoredDir(self, testID=str):
         
         # Create a new directory for the scored files
-        newDir = os.path.join(self.currentDir, 'scored')
-        if not os.path.exists(newDir):
-            os.mkdir(newDir)
-            print(f'Successfully created directory: {newDir}')
+        newDir = os.path.join(self.currentDir, f'{testID}_scores')
+        if os.path.exists(newDir):
+            # If the directory already exists, prompt the user for input
+            response = input(f"Directory {newDir} already exists.\n Do you want to overwrite it? Enter 'y' for yes or 'n' for no: ")
+            while response.lower() not in ['y', 'n']:
+                response = input("Invalid input. Enter 'y' for yes or 'n' for no: ")
+            if response.lower() == 'y':
+                # If the user types 'y', delete the existing directory and create a new one
+                shutil.rmtree(newDir)
+                os.mkdir(newDir)
+                log.info(f'Successfully created directory: {newDir}')
+            elif response.lower() == 'n':
+                # If the user types 'n', add an iterator to the directory name and create a new one
+                i = 1
+                while os.path.exists(f'{newDir}_{i}'):
+                    i += 1
+                newDir = f'{newDir}_{i}'
+                os.mkdir(newDir)
+                log.info(f'Successfully created directory: {newDir}')
+
         else:
-            print(f'Directory {newDir} already exists')
-        
-        # Move all files with 'scores' in their name to the new scored directory
+            # If the directory does not exist, create a new one
+            os.mkdir(newDir)
+            log.info(f'Successfully created directory: {newDir}')
+    
+        # Move all files with 'scores' in their name to the new scored directory and move the log file
         for file in os.listdir(self.currentDir):
-            if 'scores' in file:
+            if 'sc' in file or file == 'output.log':
                 filePath = os.path.join(self.currentDir, file)
                 shutil.move(filePath, newDir)
-                print(f'Successfully moved {file} to {newDir}')
+                log.info(f'Successfully moved {file} to {newDir}')
 
-    def logConfig(self):
+    def initLogging(self):
         
         # Configure logging
         log.basicConfig(filename='output.log', level=log.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -116,11 +155,11 @@ class Util:
         # Find the file
         df = self.findFile(testName)
 
-        # Get trial types
-        trialTypes = self.getTrialType(df)
+        # Get block types
+        blockTypes = self.getBlockType(df)
 
-        # Subset data by trial type
-        subsetList = self.subsetByTrial(df, trialTypes)
+        # Subset data by block type
+        subsetList = self.subsetByBlock(df, blockTypes)
 
         return subsetList
 
@@ -132,276 +171,276 @@ class Scoring(Util):
     def fsScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('FiguralSpeed')
+        blockDfs = self.initScoring('FiguralSpeed')
 
         # create a list to store the results
-        trialData = []
+        blockData = []
 
-        # score each trial and add results to the list
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 13].mean()
-            responseTimes = trial.iloc[:, 14].mean()
-            responseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].mean()
-            responseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].mean()
-            medianResponseTime = trial.iloc[:, 14].median()
-            medianResponseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].median()
+        # score each block and add results to the list
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 13].mean()
+            responseTimes = block.iloc[:, 14].mean()
+            responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
+            responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+            medianResponseTime = block.iloc[:, 14].median()
+            medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
+            medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Total Inputs': trial.iloc[:, 13].count(),
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Trials': block.iloc[:, 13].count(),
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'fs_scores.csv')
+        self.outputToCsv(blockData, 'figSpd_sc.csv')
 
     def luScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('LetterUpdating')
+        blockDfs = self.initScoring('LetterUpdating')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialName = trial.iloc[0, 4]
-            pc = trial.iloc[:, 18].mean() / 3
-            totalInputs = trial.iloc[:, 18].count()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockName = block.iloc[0, 4]
+            pc = block.iloc[:, 18].mean() / 3
+            totalTrials = block.iloc[:, 18].count()
 
-            trialData.append({
-                'Trial': trialName,
-                'Proportion Correct': pc,
-                'Total Inputs': totalInputs
+            blockData.append({
+                'Block': blockName,
+                'PC': pc,
+                'Trials': totalTrials
             })
 
-        self.outputToCsv(trialData, 'lu_scores.csv')
+        self.outputToCsv(blockData, 'letUp_sc.csv')
 
     def msScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('MotoricSpeed')
+        blockDfs = self.initScoring('MotoricSpeed')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 5]
-            pc = trial.iloc[:, 15].mean()
-            totalInputs = trial.iloc[:, 13].count()
-            responseTimes = trial.iloc[:, 14].mean()
-            responseCorrect = trial[trial.iloc[:, 15] == 1].iloc[:, 14].mean()
-            responseIncorrect = trial[trial.iloc[:, 15] == 0].iloc[:, 14].mean()
-            medianResponseTime = trial.iloc[:, 14].median()
-            medianResponseCorrect = trial[trial.iloc[:, 15] == 1].iloc[:, 14].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 15] == 0].iloc[:, 14].median()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 5]
+            pc = block.iloc[:, 15].mean()
+            totalTrials = block.iloc[:, 13].count()
+            responseTimes = block.iloc[:, 14].mean()
+            responseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].mean()
+            responseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].mean()
+            medianResponseTime = block.iloc[:, 14].median()
+            medianResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].median()
+            medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Total Inputs': trial.iloc[:, 13].count(),
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Trials': block.iloc[:, 13].count(),
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'ms_scores.csv')
+        self.outputToCsv(blockData, 'motSpd_sc.csv')
 
     def nmScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('NumberMemory')
+        blockDfs = self.initScoring('NumberMemory')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 10].mean()
-            totalInputs = trial.iloc[:, 13].count()
-            responseTimes = trial.iloc[:, 11].mean()
-            responseCorrect = trial[trial.iloc[:, 10] == 1].iloc[:, 11].mean()
-            responseIncorrect = trial[trial.iloc[:, 10] == 0].iloc[:, 11].mean()
-            medianResponseTime = trial.iloc[:, 11].median()
-            medianResponseCorrect = trial[trial.iloc[:, 10] == 1].iloc[:, 11].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 10] == 0].iloc[:, 11].median()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 10].mean()
+            totalTrials = block.iloc[:, 13].count()
+            responseTimes = block.iloc[:, 11].mean()
+            responseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].mean()
+            responseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].mean()
+            medianResponseTime = block.iloc[:, 11].median()
+            medianResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].median()
+            medianResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Total Inputs': totalInputs,
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Trials': totalTrials,
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'nm_scores.csv')
+        self.outputToCsv(blockData, 'numMem_sc.csv')
 
-    # this test has a different trial format and the column is 6 instead of 5
+    # this test has a different block format and the column is 6 instead of 5
     def nbScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('Numerical_nBack')
+        blockDfs = self.initScoring('Numerical_nBack')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 5]
-            pc = trial.iloc[:, 13].mean()
-            totalCorrect = trial.iloc[:, 13].sum()
-            totalInputs = trial.iloc[:, 13].count()
-            responseTimes = trial.iloc[:, 14].mean()
-            responseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].mean()
-            responseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].mean()
-            medianResponseTime = trial.iloc[:, 14].median()
-            medianResponseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].median()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 5]
+            pc = block.iloc[:, 13].mean()
+            totalCorrect = block.iloc[:, 13].sum()
+            totalTrials = block.iloc[:, 13].count()
+            responseTimes = block.iloc[:, 14].mean()
+            responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
+            responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+            medianResponseTime = block.iloc[:, 14].median()
+            medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
+            medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
                 'Total Correct': totalCorrect,
-                'Total Inputs': totalInputs,
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+                'Trials': totalTrials,
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'nb_scores.csv')
+        self.outputToCsv(blockData, 'numNB_sc.csv')
 
     def nsScore(self):
     
         # initialize scoring
-        trialDfs = self.initScoring('NumericalSpeed')
+        blockDfs = self.initScoring('NumericalSpeed')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 13].mean()
-            totalCorrect = trial.iloc[:, 13].sum()
-            responseTimes = trial.iloc[:, 14].mean()
-            responseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].mean()
-            responseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].mean()
-            medianResponseTime = trial.iloc[:, 14].median()
-            medianResponseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].median()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 13].mean()
+            totalCorrect = block.iloc[:, 13].sum()
+            responseTimes = block.iloc[:, 14].mean()
+            responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
+            responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+            medianResponseTime = block.iloc[:, 14].median()
+            medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
+            medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Total Inputs': totalCorrect,
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Trials': totalCorrect,
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'ns_scores.csv')
+        self.outputToCsv(blockData, 'numSpd_sc.csv')
 
     def stScore(self):
     
         # initialize scoring
-        trialDfs = self.initScoring('SpeedTabbing')
+        blockDfs = self.initScoring('SpeedTabbing')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            numPresses = trial.iloc[:, 5].count()
-            responseTimes = trial.iloc[:, 10].mean()
-            medianResponseTime = trial.iloc[:, 10].median()
-            firstPress = trial.iloc[0, 10]
-            lastPress = trial.iloc[-1, 10]
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            numPresses = block.iloc[:, 5].count()
+            responseTimes = block.iloc[:, 10].mean()
+            medianResponseTime = block.iloc[:, 10].median()
+            firstPress = block.iloc[0, 10]
+            lastPress = block.iloc[-1, 10]
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Total Number of Presses': numPresses,
-                'Average Response Time': responseTimes,
-                'Median Response Time': medianResponseTime,
+            blockData.append({
+                'Block': blockType,
+                'Presses': numPresses,
+                'Mean RT': responseTimes,
+                'Med RT': medianResponseTime,
                 'First Press': firstPress,
                 'Last Press': lastPress
             })
 
-        self.outputToCsv(trialData, 'st_scores.csv')
+        self.outputToCsv(blockData, 'spdTab_sc.csv')
 
     def vsScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('VerbalSpeed')
+        blockDfs = self.initScoring('VerbalSpeed')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 13].mean()
-            responseTimes = trial.iloc[:, 14].mean()
-            responseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].mean()
-            responseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].mean()
-            medianResponseTime = trial.iloc[:, 14].median()
-            medianResponseCorrect = trial[trial.iloc[:, 13] == 1].iloc[:, 14].median()
-            medianResponseIncorrect = trial[trial.iloc[:, 13] == 0].iloc[:, 14].median()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 13].mean()
+            responseTimes = block.iloc[:, 14].mean()
+            responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
+            responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+            medianResponseTime = block.iloc[:, 14].median()
+            medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
+            medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Average Response Time': responseTimes,
-                'Average Response Time (Correct)': responseCorrect,
-                'Average Response Time (Incorrect)': responseIncorrect,
-                'Median Response Time': medianResponseTime,
-                'Median Response Time (Correct)': medianResponseCorrect,
-                'Median Response Time (Incorrect)': medianResponseIncorrect
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Mean RT': responseTimes,
+                'Mean RT (C)': responseCorrect,
+                'Mean RT (I)': responseIncorrect,
+                'Med RT': medianResponseTime,
+                'Med RT (C)': medianResponseCorrect,
+                'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(trialData, 'vs_scores.csv')
+        self.outputToCsv(blockData, 'verbSpd_sc.csv')
 
     def olmScore(self):
 
         # NOTE: consists of 6x6 grid of objects
 
         # initialize scoring
-        trialDfs = self.initScoring('ObjectLocationMemory')
+        blockDfs = self.initScoring('ObjectLocationMemory')
         
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 9].item()
-            responseTimes = trial.iloc[:, 7].item()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 9].item()
+            responseTimes = block.iloc[:, 7].item()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
                 'Total Response Time': responseTimes
             })
 
@@ -409,65 +448,71 @@ class Scoring(Util):
         # 1. Determine the original coordinates of the object
         # 2. Determine the coordinates of the object after the translation
 
-        self.outputToCsv(trialData, 'olm_scores.csv')
+        self.outputToCsv(blockData, 'objLocMem_sc.csv')
 
     def suScore(self):
     
         # NOTE: consists of 3, 3x3 grids of objects
 
         # initialize scoring
-        trialDfs = self.initScoring('SpatialUpdating')
+        blockDfs = self.initScoring('SpatialUpdating')
 
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pcGrid1 = trial.iloc[:, 33].mean()
-            pcGrid2 = trial.iloc[:, 34].mean()
-            pcGrid3 = trial.iloc[:, 35].mean()
-            pcTotal = trial.iloc[:, 36].mean()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pcGrid1 = block.iloc[:, 33].mean()
+            pcGrid2 = block.iloc[:, 34].mean()
+            pcGrid3 = block.iloc[:, 35].mean()
+            pcTotal = block.iloc[:, 36].mean()
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct Grid 1': pcGrid1,
-                'Proportion Correct Grid 2': pcGrid2,
-                'Proportion Correct Grid 3': pcGrid3,
-                'Proportion Correct Total': pcTotal
+            blockData.append({
+                'Block': blockType,
+                'PC Grid 1': pcGrid1,
+                'PC Grid 2': pcGrid2,
+                'PC Grid 3': pcGrid3,
+                'PC Total': pcTotal
             })
 
         # Nitty gritty details
         # 1. Determine the original coordinates of the object
         # 2. Determine the coordinates of the object after the translation
 
-        self.outputToCsv(trialData, 'su_scores.csv')
+        self.outputToCsv(blockData, 'spatUp_sc.csv')
 
     def wrScore(self):
 
         # initialize scoring
-        trialDfs = self.initScoring('WordRecall')
+        blockDfs = self.initScoring('WordRecall')
         
-        # create an empty list to store trial data
-        trialData = []
+        # create an empty list to store block data
+        blockData = []
 
-        # score each trial (this will be general scores)
-        for trial in trialDfs:
-            trialType = trial.iloc[0, 4]
-            pc = trial.iloc[:, 24].item() / trial.iloc[:, 23].item()
-            intrusions = trial.iloc[:, 25].item() / trial.iloc[:, 23].item()
+        # score each block (this will be general scores)
+        for block in blockDfs:
+            blockType = block.iloc[0, 4]
+            pc = block.iloc[:, 24].item() / block.iloc[:, 23].item()
+            intrusions = block.iloc[:, 25].item() / block.iloc[:, 23].item()
+            # proportion incorrect (i.e., no intrusions)
+            pi = (block.iloc[:, 23].item() - block.iloc[:, 24].item() - block.iloc[:, 25].item()) / block.iloc[:, 23].item() 
 
-            trialData.append({
-                'Trial Type': trialType,
-                'Proportion Correct': pc,
-                'Proportion Intrusions': intrusions
+            blockData.append({
+                'Block': blockType,
+                'PC': pc,
+                'Prop Intrusions': intrusions,
+                'PI (No Intrusions)': pi
             })
 
-        self.outputToCsv(trialData, 'wr_scores.csv')
+        self.outputToCsv(blockData, 'wrdRec_sc.csv')
 
 if __name__ == '__main__':
     # create a new instance of the class
     scoring = Scoring()
+
+    # initialize logging
+    scoring.initLogging()
 
     # score the data
     scoring.fsScore()
@@ -483,7 +528,7 @@ if __name__ == '__main__':
     scoring.wrScore()
 
     # organize the data
-    scoring.makeScoredDir()
+    scoring.makeScoredDir(scoring.getTestID())
 
     # print a message to the console
     print('Done!')
