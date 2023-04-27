@@ -21,10 +21,10 @@
 # TODO: VS add failure for same and different
 # TODO: MS sort errors by square
 # TODO: Maybe add a column for interesting response time values (e.g. 0, 9999, etc.)
-# TODO:
 
 # OTHER:
 # TODO: Compile as executable for MAC and PC
+# TODO: Error handling!!!
 
 import numpy as np
 import pandas as pd
