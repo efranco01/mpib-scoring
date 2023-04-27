@@ -32,6 +32,7 @@ import matplotlib.pyplot as plot
 import os
 import logging as log
 import shutil
+import argparse as ap
 
 class Util:
     def __init__(self) -> None:
@@ -162,6 +163,23 @@ class Util:
         subsetList = self.subsetByBlock(df, blockTypes)
 
         return subsetList
+    
+class InputHandler(Util):
+        def __init__(self) -> None:
+            super().__init__()
+
+        def overrideMode(self):
+            pass
+            
+        def userPrompt(self):
+            # Prompt user for input
+            input('Hello! Welcome to the test scoring program. Press enter to continue.')
+            input('Would you like to begin in default or override mode? Press enter for default or type "override" for override mode: ')
+            
+            if input == 'override':
+                self.overrideMode()
+            else:
+                return None
 
 
 class Scoring(Util):
