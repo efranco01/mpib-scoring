@@ -1,8 +1,5 @@
 # INPUT:
-# TODO: Build simple ui or just use terminal for inputs
-# TODO: Allow for more in-depth customization in args (argparse)
-# TODO: Make script into executable (pyinstaller)
-# TODO: Allow running DEFAULT and OVERRIDE (e.g. default is all tests, override is only selected plus other customizations)
+# TODO: Ask for file location or allow for 'enter' to use current directory
 
 # SCORING:
 # TODO: Score distance using city block method (will be in the nitty gritty area)
@@ -14,46 +11,51 @@
 # OUTPUT:
 # TODO: Display more in-depth details further along (horizontal)
 # TODO: Display avg distance from correct block (incorrect answers) in the 
-# TODO: Change csv file names to be more descriptive also change column names to be shorter
 # TODO: Add 0s to "invalid responses" column
 # TODO: Word recall add incorrect responses
 # TODO: LU add mean streak length correct vs incorrect
 # TODO: VS add failure for same and different
 # TODO: MS sort errors by square
 # TODO: Maybe add a column for interesting response time values (e.g. 0, 9999, etc.)
+# TODO: Make output file xlsx instead of csv
+# TODO: Finish adding overridden blocks to output file
+# TODO: Make a choice between asking testID and using current directory as testID
 
 # OTHER:
 # TODO: Compile as executable for MAC and PC
-# TODO: Error handling!!!
+# TODO: Add a GUI (will need to compile with modules included)
+# TODO: Send windows executable to Dr. Raz
+# TODO: Update README with instructions for running the program
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plot
 import os
 import logging as log
 import shutil
-import argparse as ap
 
 class Util:
     def __init__(self) -> None:
         self.currentDir = os.getcwd()
 
     def findFile(self, testName=str):
-
+        
         # Search for a txt file in the current directory
         files_found = []
         for file in os.listdir(self.currentDir):
             if file.endswith('.txt') and testName in file:
                 files_found.append(file)
 
+        # If no TXT file is found, return None
         if len(files_found) == 0:
             log.info(f'No TXT file named {testName} found in current directory')
             return None
+        
+        # If one TXT file is found, read it into a Pandas dataframe
         elif len(files_found) == 1:
-            # If a TXT file is found, read it into a Pandas dataframe
             df = pd.read_csv(os.path.join(self.currentDir, files_found[0]), delimiter='\t')
             (f'Successfully read file: {files_found[0]}')
             return df
+        # If multiple TXT files are found, prompt the user to select one
         else:
             log.info(f'{len(files_found)} files with the name {testName} found in current directory:')
             for i, file in enumerate(files_found):
@@ -99,13 +101,17 @@ class Util:
 
         # get test ID from directory name
         testID = os.path.basename(self.currentDir)
-        log.info(f'Test ID: {testID}')
         return testID
-
+    
+    def askTestID(self):
+        
+        # Prompt user for test ID
+        self.testID = input('Enter the test ID: ')
+        
     def makeScoredDir(self, testID=str):
         
         # Create a new directory for the scored files
-        newDir = os.path.join(self.currentDir, f'{testID}_scores')
+        newDir = os.path.join(os.getcwd(), f'{testID}_scores')
         if os.path.exists(newDir):
             # If the directory already exists, prompt the user for input
             response = input(f"Directory {newDir} already exists.\n Do you want to overwrite it? Enter 'y' for yes or 'n' for no: ")
@@ -129,13 +135,14 @@ class Util:
             # If the directory does not exist, create a new one
             os.mkdir(newDir)
             log.info(f'Successfully created directory: {newDir}')
-    
+
         # Move all files with 'scores' in their name to the new scored directory and move the log file
         for file in os.listdir(self.currentDir):
-            if 'sc' in file or file == 'output.log':
-                filePath = os.path.join(self.currentDir, file)
-                shutil.move(filePath, newDir)
-                log.info(f'Successfully moved {file} to {newDir}')
+            if 'scores' not in file:
+                if 'sc' in file or file == 'output.log':
+                    filePath = os.path.join(self.currentDir, file)
+                    shutil.move(filePath, newDir)
+                    log.info(f'Successfully moved {file} to {newDir}')
 
     def initLogging(self):
         
@@ -143,18 +150,39 @@ class Util:
         log.basicConfig(filename='output.log', level=log.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
         log.info('Program started')
 
-    def outputToCsv(self, list=list, filename=str):
+    def outputToFile(self, list=list, filename=str):
         
         # Convert list to dataframe
         df = pd.DataFrame(list)
-
-        # Write dataframe to csv
-        df.to_csv(filename, float_format='%.2f', index=False)
+        
+        # If override mode is enabled and the File is specified, write dataframe to specified file type
+        if self.overrideBool == True and self.fileOverride != []:
+            if self.fileOverride[0] == 'csv':
+                filename = f'{self.getTestID()}_{filename}.csv'
+                df.to_csv(filename, float_format='%.2f', index=False)
+            elif self.fileOverride[0] == 'xlsx':
+                filename = f'{self.getTestID()}_{filename}.xlsx'
+                df.to_excel(filename, float_format='%.2f', index=False)
+            elif self.fileOverride[0] == 'txt':
+                filename = f'{self.getTestID()}_{filename}.txt'
+                df.to_csv(filename, float_format='%.2f', index=False)
+            elif self.fileOverride[0] == 'json':
+                filename = f'{self.getTestID()}_{filename}.json'
+                df.to_json(filename, float_format='%.2f', index=False)
+        else:
+            
+            # If override mode is disabled or the File is not specified, write dataframe to csv
+            filename = f'{self.getTestID()}_{filename}.csv'
+            df.to_csv(filename, float_format='%.2f', index=False)
 
     def initScoring(self, testName=str):
         
         # Find the file
         df = self.findFile(testName)
+        
+        # If there is no file, skip scoring
+        if df is None:
+            return None
 
         # Get block types
         blockTypes = self.getBlockType(df)
@@ -164,22 +192,109 @@ class Util:
 
         return subsetList
     
-class InputHandler(Util):
-        def __init__(self) -> None:
-            super().__init__()
+    def initOverride(self): # NOTE: This is currently being called multiple time
+        
+        input('Override mode enabled. Press enter to continue.')
+        overrideDict = {"Test": [], "Block": [], "File": []}
 
-        def overrideMode(self):
-            pass
+        # Ask for settings to override (e.g. test name, block types, file output type, etc.)
+        while True:
+            setting = input("Enter a setting to override [Test (name of test), Block (block type), File (file type to output)]: ")
+            if setting not in overrideDict.keys():
+                print("Invalid setting. Please enter 'Test', 'Block', or 'File'.")
+                continue
+
+            # Take each input as a list
+            value = input(f"Enter a value for '{setting}' (separate multiple values by spaces): ")
+            overrideDict[setting].extend(value.split())
+
+            # Ask if user wants to override more settings
+            more = input("Do you want to override more settings? (y/n): ")
+            if more.lower() != 'y':
+                break
             
-        def userPrompt(self):
-            # Prompt user for input
-            input('Hello! Welcome to the test scoring program. Press enter to continue.')
-            input('Would you like to begin in default or override mode? Press enter for default or type "override" for override mode: ')
+        log.debug(f'Override settings: {overrideDict}')
+        input('Override settings complete. Press enter to continue.')
+
+        # Return the dictionary of overrides
+        return overrideDict
+        
+    def askOverride(self):
+        
+        # Prompt user for input
+        answer = input('Would you like to run in default or override mode? Press enter for default or type "override" ("o") for override mode: ')
+        
+        if answer == 'override' or answer == 'o':
+            log.debug('Override mode enabled')
+            return True
+        else:
+            log.debug('Default mode enabled')
+            input('Default mode enabled. Press enter to continue.')
+            return False
+        
+    def runDefault(self):
+        
+        print('Running default tests')
+        
+        # run the default scoring
+        self.fsScore()
+        self.luScore()
+        self.msScore()
+        self.nmScore()
+        self.nbScore()
+        self.nsScore()
+        self.stScore()
+        self.vsScore()
+        self.olmScore()
+        self.suScore()
+        self.wrScore()
+        
+    def runOverride(self, overrideList):  # Only called if test names are overridden
+        
+        print('Running override tests: ' + str(overrideList))
             
-            if input == 'override':
-                self.overrideMode()
+        # Run specifically mentioned tests
+        if 'FiguralSpeed' in overrideList or 'fs' in overrideList:
+            self.fsScore()
+        if 'LetterUpdating' in overrideList or 'lu' in overrideList:
+            self.luScore()
+        if 'MotoricSpeed' in overrideList or 'ms' in overrideList:
+            self.msScore()
+        if 'NumberMemory' in overrideList or 'nm' in overrideList:
+            self.nmScore()
+        if 'Numerical_nBack' in overrideList or 'nb' in overrideList:
+            self.nbScore()
+        if 'NumericalSpeed' in overrideList or 'ns' in overrideList:
+            self.nsScore()
+        if 'SpeedTabbing' in overrideList or 'st' in overrideList:
+            self.stScore()
+        if 'VerbalSpeed' in overrideList or 'vs' in overrideList:
+            self.vsScore()
+        if 'ObjectLocationMemory' in overrideList or 'olm' in overrideList:
+            self.olmScore()
+        if 'SpatialUpdating' in overrideList or 'su' in overrideList:
+            self.suScore()
+        if 'WordRecall' in overrideList or 'wr' in overrideList:
+            self.wrScore()
+            
+    def runMain(self):
+        
+        # Ask user if they want to run in override mode
+        self.overrideBool = self.askOverride()
+        
+        if self.overrideBool == True:
+            # If override mode is enabled, ask user for settings to override
+            self.overrideDict = self.initOverride()
+            self.fileOverride = self.overrideDict.get('File')
+
+            # Load user settings into runOverride function
+            if self.overrideDict.get('Test') != []:
+                self.runOverride(self.overrideDict.get('Test'))
+                log.debug('runOverride(Test) called')
             else:
-                return None
+                self.runDefault()
+        else:
+            self.runDefault()
 
 
 class Scoring(Util):
@@ -191,9 +306,13 @@ class Scoring(Util):
         # initialize scoring
         blockDfs = self.initScoring('FiguralSpeed')
 
+        # check if scoring was successful
+        if blockDfs is None:
+            return
+        
         # create a list to store the results
         blockData = []
-
+        
         # score each block and add results to the list
         for block in blockDfs:
             blockType = block.iloc[0, 4]
@@ -206,6 +325,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Trials': block.iloc[:, 13].count(),
@@ -217,12 +337,16 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'figSpd_sc.csv')
+        self.outputToFile(blockData, 'figSpd_sc')
 
     def luScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('LetterUpdating')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -234,17 +358,22 @@ class Scoring(Util):
             totalTrials = block.iloc[:, 18].count()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockName,
                 'PC': pc,
                 'Trials': totalTrials
             })
 
-        self.outputToCsv(blockData, 'letUp_sc.csv')
+        self.outputToFile(blockData, 'letUp_sc')
 
     def msScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('MotoricSpeed')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -262,6 +391,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Trials': block.iloc[:, 13].count(),
@@ -273,12 +403,16 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'motSpd_sc.csv')
+        self.outputToFile(blockData, 'motSpd_sc')
 
     def nmScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('NumberMemory')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -296,6 +430,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalTrials,
@@ -307,13 +442,17 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'numMem_sc.csv')
+        self.outputToFile(blockData, 'numMem_sc')
 
     # this test has a different block format and the column is 6 instead of 5
     def nbScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('Numerical_nBack')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -332,6 +471,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Total Correct': totalCorrect,
@@ -344,12 +484,16 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'numNB_sc.csv')
+        self.outputToFile(blockData, 'numNB_sc')
 
     def nsScore(self):
     
         # initialize scoring
         blockDfs = self.initScoring('NumericalSpeed')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -367,6 +511,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalCorrect,
@@ -378,12 +523,16 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'numSpd_sc.csv')
+        self.outputToFile(blockData, 'numSpd_sc')
 
     def stScore(self):
     
         # initialize scoring
         blockDfs = self.initScoring('SpeedTabbing')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -398,6 +547,7 @@ class Scoring(Util):
             lastPress = block.iloc[-1, 10]
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'Presses': numPresses,
                 'Mean RT': responseTimes,
@@ -406,12 +556,16 @@ class Scoring(Util):
                 'Last Press': lastPress
             })
 
-        self.outputToCsv(blockData, 'spdTab_sc.csv')
+        self.outputToFile(blockData, 'spdTab_sc')
 
     def vsScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('VerbalSpeed')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -428,6 +582,7 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Mean RT': responseTimes,
@@ -438,7 +593,7 @@ class Scoring(Util):
                 'Med RT (I)': medianResponseIncorrect
             })
 
-        self.outputToCsv(blockData, 'verbSpd_sc.csv')
+        self.outputToFile(blockData, 'verbSpd_sc')
 
     def olmScore(self):
 
@@ -446,6 +601,10 @@ class Scoring(Util):
 
         # initialize scoring
         blockDfs = self.initScoring('ObjectLocationMemory')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
         
         # create an empty list to store block data
         blockData = []
@@ -457,6 +616,7 @@ class Scoring(Util):
             responseTimes = block.iloc[:, 7].item()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Total Response Time': responseTimes
@@ -466,7 +626,7 @@ class Scoring(Util):
         # 1. Determine the original coordinates of the object
         # 2. Determine the coordinates of the object after the translation
 
-        self.outputToCsv(blockData, 'objLocMem_sc.csv')
+        self.outputToFile(blockData, 'objLocMem_sc')
 
     def suScore(self):
     
@@ -474,6 +634,10 @@ class Scoring(Util):
 
         # initialize scoring
         blockDfs = self.initScoring('SpatialUpdating')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
 
         # create an empty list to store block data
         blockData = []
@@ -487,6 +651,7 @@ class Scoring(Util):
             pcTotal = block.iloc[:, 36].mean()
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC Grid 1': pcGrid1,
                 'PC Grid 2': pcGrid2,
@@ -498,12 +663,16 @@ class Scoring(Util):
         # 1. Determine the original coordinates of the object
         # 2. Determine the coordinates of the object after the translation
 
-        self.outputToCsv(blockData, 'spatUp_sc.csv')
+        self.outputToFile(blockData, 'spatUp_sc')
 
     def wrScore(self):
 
         # initialize scoring
         blockDfs = self.initScoring('WordRecall')
+        
+        # check if scoring was successful
+        if blockDfs is None:
+            return
         
         # create an empty list to store block data
         blockData = []
@@ -517,13 +686,15 @@ class Scoring(Util):
             pi = (block.iloc[:, 23].item() - block.iloc[:, 24].item() - block.iloc[:, 25].item()) / block.iloc[:, 23].item() 
 
             blockData.append({
+                'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Prop Intrusions': intrusions,
                 'PI (No Intrusions)': pi
             })
 
-        self.outputToCsv(blockData, 'wrdRec_sc.csv')
+        self.outputToFile(blockData, 'wrdRec_sc')
+        
 
 if __name__ == '__main__':
     # create a new instance of the class
@@ -532,18 +703,8 @@ if __name__ == '__main__':
     # initialize logging
     scoring.initLogging()
 
-    # score the data
-    scoring.fsScore()
-    scoring.luScore()
-    scoring.msScore()
-    scoring.nmScore()
-    scoring.nbScore()
-    scoring.nsScore()
-    scoring.stScore()
-    scoring.vsScore()
-    scoring.olmScore()
-    scoring.suScore()
-    scoring.wrScore()
+    # run the main function
+    scoring.runMain()
 
     # organize the data
     scoring.makeScoredDir(scoring.getTestID())
