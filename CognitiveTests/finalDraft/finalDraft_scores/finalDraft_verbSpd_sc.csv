@@ -1,4 +1,0 @@
-ID         ,Block  ,PC   ,Mean RT ,Mean RT (C) ,Mean RT (I) ,Med RT  ,Med RT (C) ,Med RT (I)
-finalDraft ,PRACT  ,1.00 ,1053.38 ,    1053.38 ,            ,1026.00 ,   1026.00 ,       
-finalDraft ,TRIAL1 ,0.97 ,1035.05 ,    1038.38 ,     905.00 ,1014.50 ,   1034.00 ,    905.00
-finalDraft ,TRIAL2 ,1.00 , 950.80 ,     950.80 ,            , 910.00 ,    910.00 ,       

@@ -1,32 +1,21 @@
-# INPUT:
-# TODO: Ask for file location or allow for 'enter' to use current directory
-
 # SCORING:
-# TODO: Score distance using city block method (will be in the nitty gritty area)
+# TODO: Score distance using city block method (will be in the nitty gritty area) OLM and SU
+# OLM is 6x6 and SU is 3x3, show correct cell vs incorrect cell
 # TODO: Score avg distance across blocks (will be in the nitty gritty area)
-# TODO: The PRACT subset only has 3 instead of 4 inputs! (fix this)
 # TODO: Add additional scoring methods (e.g. avg distance from correct block)
-# TODO: Check for 0 in response time (this likely indicates a lack of response)
 
 # OUTPUT:
-# TODO: Display more in-depth details further along (horizontal)
-# TODO: Display avg distance from correct block (incorrect answers) in the 
-# TODO: Add 0s to "invalid responses" column
-# TODO: Word recall add incorrect responses
 # TODO: LU add mean streak length correct vs incorrect
 # TODO: VS add failure for same and different
-# TODO: MS sort errors by square
-# TODO: Maybe add a column for interesting response time values (e.g. 0, 9999, etc.)
-# TODO: Make output file xlsx instead of csv
-# TODO: Finish adding overridden blocks to output file
-# TODO: Make a choice between asking testID and using current directory as testID
+# TODO: MS sort errors by square (will be in the nitty gritty area)
 # TODO: OS Module on windows seems to be duplicating the output.log file, besides that it works fine
 
 # OTHER:
 # TODO: Compile as executable for MAC and PC
 # TODO: Add a GUI (will need to compile with modules included)
 # TODO: Send windows executable to Dr. Raz
-# TODO: Update README with instructions for running the program
+# TODO: Override option to filter 0s from response time
+# TODO: Finish Block Override
 
 import numpy as np
 import pandas as pd
@@ -167,9 +156,6 @@ class Util:
             elif self.fileOverride[0] == 'txt':
                 filename = f'{self.getTestID()}_{filename}.txt'
                 df.to_csv(filename, float_format='%.2f', index=False)
-            elif self.fileOverride[0] == 'json':
-                filename = f'{self.getTestID()}_{filename}.json'
-                df.to_json(filename, float_format='%.2f', index=False)
         else:
             
             # If override mode is disabled or the File is not specified, write dataframe to csv
@@ -200,7 +186,7 @@ class Util:
 
         # Ask for settings to override (e.g. test name, block types, file output type, etc.)
         while True:
-            setting = input("Enter a setting to override [Test (name of test), Block (block type), File (file type to output)]: ")
+            setting = input("Enter a setting to override [Test (name of test), Block (block type), File (file type to output ex. csv, xlsx, txt)]: ")
             if setting not in overrideDict.keys():
                 print("Invalid setting. Please enter 'Test', 'Block', or 'File'.")
                 continue
@@ -303,6 +289,8 @@ class Scoring(Util):
         super().__init__()
 
     def fsScore(self):
+        
+        # TODO: Give maximum and minimum response times per block (not including 0s)
 
         # initialize scoring
         blockDfs = self.initScoring('FiguralSpeed')
@@ -324,7 +312,14 @@ class Scoring(Util):
             medianResponseTime = block.iloc[:, 14].median()
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
-
+            maxResponseTime = block.iloc[:, 14].max()
+            minResponseTime = block.iloc[:, 14].min()
+            maxResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
+            minResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            maxResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
+            minResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
+            
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
@@ -335,7 +330,14 @@ class Scoring(Util):
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseTimeCorrect,
+                'Min RT (C)': minResponseTimeCorrect,
+                'Max RT (I)': maxResponseTimeIncorrect,
+                'Min RT (I)': minResponseTimeIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'figSpd_sc')
@@ -390,18 +392,32 @@ class Scoring(Util):
             medianResponseTime = block.iloc[:, 14].median()
             medianResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
+            maxResponseTime = block.iloc[:, 14].max()
+            minResponseTime = block.iloc[:, 14].min()
+            maxResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].max()
+            minResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].min()
+            maxResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].max()
+            minResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].min()
+            numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
-                'Trials': block.iloc[:, 13].count(),
+                'Trials': totalTrials,
                 'Mean RT': responseTimes,
                 'Mean RT (C)': responseCorrect,
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseTimeCorrect,
+                'Min RT (C)': minResponseTimeCorrect,
+                'Max RT (I)': maxResponseTimeIncorrect,
+                'Min RT (I)': minResponseTimeIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'motSpd_sc')
@@ -429,7 +445,14 @@ class Scoring(Util):
             medianResponseTime = block.iloc[:, 11].median()
             medianResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].median()
             medianResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].median()
-
+            maxResponseTime = block.iloc[:, 11].max()
+            minResponseTime = block.iloc[:, 11].min()
+            maxResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].max()
+            minResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].min()
+            maxResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].max()
+            minResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].min()
+            numZeroInputs = block[block.iloc[:, 11] == 0].iloc[:, 11].count()
+            
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
@@ -440,7 +463,14 @@ class Scoring(Util):
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseCorrect,
+                'Min RT (C)': minResponseCorrect,
+                'Max RT (I)': maxResponseIncorrect,
+                'Min RT (I)': minResponseIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numMem_sc')
@@ -470,6 +500,14 @@ class Scoring(Util):
             medianResponseTime = block.iloc[:, 14].median()
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
+            maxResponseTime = block.iloc[:, 14].max()
+            minResponseTime = block.iloc[:, 14].min()
+            maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
+            minResponceCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
+            
 
             blockData.append({
                 'ID': self.getTestID(),
@@ -482,7 +520,14 @@ class Scoring(Util):
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseCorrect,
+                'Min RT (C)': minResponceCorrect,
+                'Max RT (I)': maxResponseIncorrect,
+                'Min RT (I)': minResponseIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numNB_sc')
@@ -504,12 +549,20 @@ class Scoring(Util):
             blockType = block.iloc[0, 4]
             pc = block.iloc[:, 13].mean()
             totalCorrect = block.iloc[:, 13].sum()
+            # Don't include 0s in response time calculation
             responseTimes = block.iloc[:, 14].mean()
             responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
             responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
             medianResponseTime = block.iloc[:, 14].median()
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
+            maxResponseTime = block.iloc[:, 14].max()
+            minResponseTime = block.iloc[:, 14].min()
+            maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
                 'ID': self.getTestID(),
@@ -521,7 +574,14 @@ class Scoring(Util):
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseCorrect,
+                'Min RT (C)': minResponseCorrect,
+                'Max RT (I)': maxResponseIncorrect,
+                'Min RT (I)': minResponseIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numSpd_sc')
@@ -544,6 +604,8 @@ class Scoring(Util):
             numPresses = block.iloc[:, 5].count()
             responseTimes = block.iloc[:, 10].mean()
             medianResponseTime = block.iloc[:, 10].median()
+            maxResponseTime = block.iloc[:, 10].max()
+            minResponseTime = block.iloc[:, 10].min()
             firstPress = block.iloc[0, 10]
             lastPress = block.iloc[-1, 10]
 
@@ -553,6 +615,8 @@ class Scoring(Util):
                 'Presses': numPresses,
                 'Mean RT': responseTimes,
                 'Med RT': medianResponseTime,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
                 'First Press': firstPress,
                 'Last Press': lastPress
             })
@@ -575,12 +639,20 @@ class Scoring(Util):
         for block in blockDfs:
             blockType = block.iloc[0, 4]
             pc = block.iloc[:, 13].mean()
+            # Don't include 0s in response time calculation
             responseTimes = block.iloc[:, 14].mean()
             responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
             responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
             medianResponseTime = block.iloc[:, 14].median()
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
+            maxResponseTime = block.iloc[:, 14].max()
+            minResponseTime = block.iloc[:, 14].min()
+            maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
                 'ID': self.getTestID(),
@@ -591,7 +663,14 @@ class Scoring(Util):
                 'Mean RT (I)': responseIncorrect,
                 'Med RT': medianResponseTime,
                 'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect
+                'Med RT (I)': medianResponseIncorrect,
+                'Max RT': maxResponseTime,
+                'Min RT': minResponseTime,
+                'Max RT (C)': maxResponseCorrect,
+                'Min RT (C)': minResponseCorrect,
+                'Max RT (I)': maxResponseIncorrect,
+                'Min RT (I)': minResponseIncorrect,
+                'Num 0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'verbSpd_sc')
@@ -667,6 +746,8 @@ class Scoring(Util):
         self.outputToFile(blockData, 'spatUp_sc')
 
     def wrScore(self):
+        
+        # TODO: Word recall add incorrect responses
 
         # initialize scoring
         blockDfs = self.initScoring('WordRecall')
@@ -685,7 +766,6 @@ class Scoring(Util):
             intrusions = block.iloc[:, 25].item() / block.iloc[:, 23].item()
             # proportion incorrect (i.e., no intrusions)
             pi = (block.iloc[:, 23].item() - block.iloc[:, 24].item() - block.iloc[:, 25].item()) / block.iloc[:, 23].item() 
-
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
