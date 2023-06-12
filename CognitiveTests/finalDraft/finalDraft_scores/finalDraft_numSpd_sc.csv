@@ -1,0 +1,4 @@
+ID         ,Block  ,PC   ,Trials ,Mean RT ,Mean RT (C) ,Mean RT (I) ,Med RT  ,Med RT (C) ,Med RT (I)
+finalDraft ,PRACT  ,0.95 ,    37 ,1036.67 ,    1021.03 ,    1326.00 , 993.00 ,    978.00 ,   1326.00
+finalDraft ,TRIAL1 ,0.95 ,    38 ,1050.78 ,    1062.18 ,     834.00 ,1014.00 ,   1026.00 ,    834.00
+finalDraft ,TRIAL2 ,1.00 ,    40 ,1031.97 ,    1031.97 ,            , 978.00 ,    978.00 ,       
