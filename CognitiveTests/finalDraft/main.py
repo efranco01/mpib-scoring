@@ -6,7 +6,6 @@
 
 # OUTPUT:
 # TODO: LU add mean streak length correct vs incorrect
-# TODO: VS add failure for same and different
 # TODO: MS sort errors by square (will be in the nitty gritty area)
 # TODO: OS Module on windows seems to be duplicating the output.log file, besides that it works fine
 

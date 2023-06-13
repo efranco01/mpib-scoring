@@ -1,3 +1,4 @@
+import pandas as pd
 from util import Util
 
 class Scoring(Util):
@@ -355,7 +356,8 @@ class Scoring(Util):
         for block in blockDfs:
             blockType = block.iloc[0, 4]
             pc = block.iloc[:, 13].mean()
-            # Don't include 0s in response time calculation
+            pcSame = block[block.iloc[:, 8] == 1].iloc[:, 13].mean()
+            pcDifferent = block[block.iloc[:, 8] == 2].iloc[:, 13].mean()
             responseTimes = block.iloc[:, 14].mean()
             responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
             responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
@@ -369,11 +371,13 @@ class Scoring(Util):
             maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
             minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
-
+            
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
+                'PC (Same)': pcSame,
+                'PC (Different)': pcDifferent,
                 'Mean RT': responseTimes,
                 'Mean RT (C)': responseCorrect,
                 'Mean RT (I)': responseIncorrect,

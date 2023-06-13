@@ -160,7 +160,7 @@ class Util:
 
         return subsetList
     
-    def initOverride(self): # NOTE: This is currently being called multiple time
+    def initOverride(self):
         
         input('Override mode enabled. Press enter to continue.')
         overrideDict = {"Test": [], "Block": [], "File": []}
