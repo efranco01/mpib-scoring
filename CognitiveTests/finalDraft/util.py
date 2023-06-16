@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import logging as log
 import shutil
+import math
 
 class Util:
     def __init__(self) -> None:
@@ -78,6 +79,17 @@ class Util:
         
         # Prompt user for test ID
         self.testID = input('Enter the test ID: ')
+        
+    def euclideanDistance(self, list1, list2):    
+        # will return the distance between two points using the Euclidean method
+        return math.sqrt((list2[0] - list1[0])**2 + (list2[1] - list[0])**2)
+    
+    def cityBlockDistance(self, list1, list2):
+        # will return the distance between two points using the city block method
+        return abs(list2[0] - list1[0]) + abs(list2[1] - list1[1])
+    
+    def getBlockItem(self, block, column):
+        return block.iloc[:, column].item()
         
     def makeScoredDir(self, testID=str):
         
@@ -161,6 +173,9 @@ class Util:
         return subsetList
     
     def initOverride(self):
+        
+        # TODO: Finish Block Override
+        # TODO: Override option to filter 0s from response time
         
         input('Override mode enabled. Press enter to continue.')
         overrideDict = {"Test": [], "Block": [], "File": []}
