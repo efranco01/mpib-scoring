@@ -1,4 +1,3 @@
-# TODO: Compile as executable for MAC and PC
 # TODO: Add a GUI (will need to compile with modules included)
 
 # IMPORTS

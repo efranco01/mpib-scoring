@@ -1,4 +1,4 @@
-import pandas as pd
+import numpy as np
 from util import Util
 
 class Scoring(Util):
@@ -403,6 +403,7 @@ class Scoring(Util):
 
         # NOTE: consists of 6x6 grid of objects
         # TODO: Add additional scoring methods (e.g. avg distance from correct block)
+        # TODO: Add a matrix representation of the grid showing correct vs incorrect responses
         
         # initialize scoring
         blockDfs = self.initScoring('ObjectLocationMemory')
@@ -423,18 +424,18 @@ class Scoring(Util):
             # 12 stimuli total
             cellDistances = {
                 '1': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '2': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '3': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '4': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '5': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '6': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '7': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '8': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '9': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '10': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '11': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]],
-                '12': [[self.getBlockItem(block, 12), self.getBlockItem(block, 13)], [self.getBlockItem(block, 61), self.getBlockItem(block, 62)]]
-                #   correct(x, y), incorrect(x, y)
+                '2': [[self.getBlockItem(block, 16), self.getBlockItem(block, 17)], [self.getBlockItem(block, 66), self.getBlockItem(block, 67)]],
+                '3': [[self.getBlockItem(block, 20), self.getBlockItem(block, 21)], [self.getBlockItem(block, 71), self.getBlockItem(block, 72)]],
+                '4': [[self.getBlockItem(block, 24), self.getBlockItem(block, 25)], [self.getBlockItem(block, 76), self.getBlockItem(block, 77)]],
+                '5': [[self.getBlockItem(block, 28), self.getBlockItem(block, 29)], [self.getBlockItem(block, 81), self.getBlockItem(block, 82)]],
+                '6': [[self.getBlockItem(block, 32), self.getBlockItem(block, 33)], [self.getBlockItem(block, 86), self.getBlockItem(block, 87)]],
+                '7': [[self.getBlockItem(block, 36), self.getBlockItem(block, 37)], [self.getBlockItem(block, 91), self.getBlockItem(block, 92)]],
+                '8': [[self.getBlockItem(block, 40), self.getBlockItem(block, 41)], [self.getBlockItem(block, 96), self.getBlockItem(block, 97)]],
+                '9': [[self.getBlockItem(block, 44), self.getBlockItem(block, 45)], [self.getBlockItem(block, 101), self.getBlockItem(block, 102)]],
+                '10': [[self.getBlockItem(block, 48), self.getBlockItem(block, 49)], [self.getBlockItem(block, 106), self.getBlockItem(block, 107)]],
+                '11': [[self.getBlockItem(block, 52), self.getBlockItem(block, 53)], [self.getBlockItem(block, 111), self.getBlockItem(block, 112)]],
+                '12': [[self.getBlockItem(block, 56), self.getBlockItem(block, 57)], [self.getBlockItem(block, 116), self.getBlockItem(block, 117)]]
+                #   correct(x, y), response(x, y)
             }
             
             # there should be a way to do this in a loop, but I'm not sure how yet
@@ -470,16 +471,16 @@ class Scoring(Util):
                 '12' : self.cityBlockDistance(cellDistances['12'][0], cellDistances['12'][1])
             }
             
-            # meanEuclideanDist = 
-            # meanManhattanDist = 
+            meanEuclideanDist = np.array(list(cellDistancesEuclidean.values())).mean()
+            meanCityBlockDist = np.array(list(cellDistancesCityBlock.values())).mean()
             
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
                 'Total Response Time': responseTimes,
-                'Mean ED': meanEuclideanDistance,
-                'Mean CB': meanCityBlockDistance,
+                'Mean ED': meanEuclideanDist,
+                'Mean CB': meanCityBlockDist,
                 'ED 1': cellDistancesEuclidean['1'],
                 'ED 2': cellDistancesEuclidean['2'],
                 'ED 3': cellDistancesEuclidean['3'],
@@ -506,14 +507,11 @@ class Scoring(Util):
                 'CB 12': cellDistancesCityBlock['12']
             })
 
-
         self.outputToFile(blockData, 'objLocMem_sc')
 
     def suScore(self):
     
-        # NOTE: consists of 3, 3x3 grids of objects
-        # TODO: Score distance using city block method (will be in the nitty gritty area) OLM and SU
-        # Show correct cell vs incorrect cell (distance will be Euclidean, but normalized to non-floats)
+        # TODO: Check ED and CB calculations
 
         # initialize scoring
         blockDfs = self.initScoring('SpatialUpdating')
@@ -532,19 +530,40 @@ class Scoring(Util):
             pcGrid2 = block.iloc[:, 34].mean()
             pcGrid3 = block.iloc[:, 35].mean()
             pcTotal = block.iloc[:, 36].mean()
-
+            
+            gridCoords = {
+                '1': (self.convertToCoord(self.getBlockValues(block, 22)), self.convertToCoord(self.getBlockValues(block, 28))),
+                '2': (self.convertToCoord(self.getBlockValues(block, 24)), self.convertToCoord(self.getBlockValues(block, 30))),
+                '3': (self.convertToCoord(self.getBlockValues(block, 26)), self.convertToCoord(self.getBlockValues(block, 32))),
+                # correct(A1) and incorrect(A2) coordinates --> (x1, y1), (x2, y2)
+            }
+            
+            cellED = {
+                '1': self.euclideanDistance(gridCoords['1'][0], gridCoords['1'][1]),
+                '2': self.euclideanDistance(gridCoords['2'][0], gridCoords['2'][1]),
+                '3': self.euclideanDistance(gridCoords['3'][0], gridCoords['3'][1])
+            }
+            
+            cellCB = {
+                '1': self.cityBlockDistance(gridCoords['1'][0], gridCoords['1'][1]),
+                '2': self.cityBlockDistance(gridCoords['2'][0], gridCoords['2'][1]),
+                '3': self.cityBlockDistance(gridCoords['3'][0], gridCoords['3'][1])
+            }
+            
             blockData.append({
                 'ID': self.getTestID(),
                 'Block': blockType,
                 'PC Grid 1': pcGrid1,
                 'PC Grid 2': pcGrid2,
                 'PC Grid 3': pcGrid3,
-                'PC Total': pcTotal
+                'PC Total': pcTotal,
+                'ED Grid 1': cellED['1'],
+                'ED Grid 2': cellED['2'],
+                'ED Grid 3': cellED['3'],
+                'CB Grid 1': cellCB['1'],
+                'CB Grid 2': cellCB['2'],
+                'CB Grid 3': cellCB['3']
             })
-
-        # Nitty gritty details
-        # 1. Determine the original coordinates of the object
-        # 2. Determine the coordinates of the object after the translation
 
         self.outputToFile(blockData, 'spatUp_sc')
 

@@ -82,7 +82,7 @@ class Util:
         
     def euclideanDistance(self, list1, list2):    
         # will return the distance between two points using the Euclidean method
-        return math.sqrt((list2[0] - list1[0])**2 + (list2[1] - list[0])**2)
+        return math.sqrt((list2[0] - list1[0])**2 + (list2[0] - list1[0])**2)
     
     def cityBlockDistance(self, list1, list2):
         # will return the distance between two points using the city block method
@@ -90,7 +90,22 @@ class Util:
     
     def getBlockItem(self, block, column):
         return block.iloc[:, column].item()
-        
+    
+    def getBlockValues(self, block, column):
+        column_data = block.iloc[:, column].str.strip()  # Remove leading and trailing whitespace
+        values = column_data.astype(str).values
+        return ' '.join(values)
+
+    def convertToCoord(self, letterCoord):
+        if letterCoord[0] == 'A':
+            return (1, int(letterCoord[1]))
+        elif letterCoord[0] == 'B':
+            return (2, int(letterCoord[1]))
+        elif letterCoord[0] == 'C':
+            return (3, int(letterCoord[1]))
+        else:
+            raise ValueError("Invalid letter coordinate")
+
     def makeScoredDir(self, testID=str):
         
         # Create a new directory for the scored files
