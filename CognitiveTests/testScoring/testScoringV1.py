@@ -4,6 +4,7 @@ import os
 import logging as log
 import shutil
 import math
+import openpyxl
 
 class Util:
     def __init__(self) -> None:
@@ -152,6 +153,8 @@ class Util:
         
         # Convert list to dataframe
         df = pd.DataFrame(list)
+        
+        df.fillna(value="NaN", inplace=True)
         
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
