@@ -4,7 +4,9 @@ import os
 import logging as log
 import shutil
 import math
-import openpyxl
+
+# TODO: RT Cutoff at 200ms
+# TODO: Glossary of Variable Names
 
 class Util:
     def __init__(self) -> None:
@@ -302,8 +304,6 @@ class Scoring(Util):
         super().__init__()
 
     def fsScore(self):
-        
-        # TODO: Give maximum and minimum response times per block (not including 0s)
 
         # initialize scoring
         blockDfs = self.initScoring('FiguralSpeed')
@@ -326,11 +326,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
-            minResponseTime = block.iloc[:, 14].min()
+            minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            minResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
-            minResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            minResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
             blockData.append({
@@ -410,11 +410,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
-            minResponseTime = block.iloc[:, 14].min()
+            minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].max()
-            minResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].min()
+            minResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].max()
-            minResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].min()
+            minResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
@@ -463,11 +463,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].median()
             medianResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].median()
             maxResponseTime = block.iloc[:, 11].max()
-            minResponseTime = block.iloc[:, 11].min()
+            minResponseTime = block.iloc[:, 11][block.iloc[:, 11] >= 200].min()
             maxResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].max()
-            minResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].min()
+            minResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11][block.iloc[:, 11] >= 200].min()
             maxResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].max()
-            minResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].min()
+            minResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11][block.iloc[:, 11] >= 200].min()
             numZeroInputs = block[block.iloc[:, 11] == 0].iloc[:, 11].count()
             
             blockData.append({
@@ -518,11 +518,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
-            minResponseTime = block.iloc[:, 14].min()
+            minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponceCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            minResponceCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
-            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
 
@@ -574,11 +574,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
-            minResponseTime = block.iloc[:, 14].min()
+            minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
-            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
@@ -622,7 +622,7 @@ class Scoring(Util):
             responseTimes = block.iloc[:, 10].mean()
             medianResponseTime = block.iloc[:, 10].median()
             maxResponseTime = block.iloc[:, 10].max()
-            minResponseTime = block.iloc[:, 10].min()
+            minResponseTime = block.iloc[:, 10][block.iloc[:, 10] >= 200].min()
             firstPress = block.iloc[0, 10]
             lastPress = block.iloc[-1, 10]
 
@@ -665,11 +665,11 @@ class Scoring(Util):
             medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
-            minResponseTime = block.iloc[:, 14].min()
+            minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].min()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
-            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].min()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
             blockData.append({
@@ -774,7 +774,7 @@ class Scoring(Util):
                 'ID': self.getTestID(),
                 'Block': blockType,
                 'PC': pc,
-                'Total Response Time': responseTimes,
+                'Total RT': responseTimes,
                 'Mean ED': meanEuclideanDist,
                 'Mean CB': meanCityBlockDist,
                 'ED 1': cellDistancesEuclidean['1'],
@@ -864,8 +864,6 @@ class Scoring(Util):
         self.outputToFile(blockData, 'spatUp_sc')
 
     def wrScore(self):
-        
-        # TODO: Word recall add incorrect responses
 
         # initialize scoring
         blockDfs = self.initScoring('WordRecall')

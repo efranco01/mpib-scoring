@@ -1,0 +1,10 @@
+37	potatoes
+15	eyes
+44	pigs
+59	letters
+26	cakes
+47	chairs
+67	vials
+76	aircraft
+63	spikes
+84	trees

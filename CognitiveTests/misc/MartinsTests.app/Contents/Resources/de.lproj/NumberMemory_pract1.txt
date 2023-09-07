@@ -1,0 +1,10 @@
+40	GŸrtel
+54	Bojen
+21	Waffeln
+30	Flaggen
+16	Bšgen
+74	Hebel
+51	SŠcke
+36	Tafeln
+86	Hirten
+85	Platten
