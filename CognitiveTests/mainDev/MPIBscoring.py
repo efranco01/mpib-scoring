@@ -10,14 +10,10 @@ import math
 # TODO: Give readable city block method
 # NOTE: When done with all changes, recompile exe for MAC and Windows
 
-
 class Util:
     def __init__(self) -> None:
-        # self.currentDir = os.getcwd()
-        abspath = os.path.abspath(__file__)
-        dname = os.path.dirname(abspath)
-        self.currentDir = dname
-        os.chdir(dname)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.currentDir = script_dir
 
     def findFile(self, testName=str):
         
@@ -124,6 +120,12 @@ class Util:
 
     def makeScoredDir(self, testID=str):
         
+        # Get the directory of the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Change the working directory to the script's directory
+        os.chdir(script_dir)
+        
         # Create a new directory for the scored files
         newDir = os.path.join(self.currentDir, f'{testID}_scores')
         if os.path.exists(newDir):
@@ -208,9 +210,6 @@ class Util:
         return subsetList
     
     def initOverride(self):
-        
-        # TODO: Finish Block Override
-        # TODO: Override option to filter 0s from response time
         
         input('Override mode enabled. Press enter to continue.')
         overrideDict = {"Test": [], "Block": [], "File": []}
