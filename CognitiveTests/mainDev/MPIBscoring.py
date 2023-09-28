@@ -12,14 +12,14 @@ import math
 
 class Util:
     def __init__(self) -> None:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.currentDir = script_dir
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(self.script_dir)
 
     def findFile(self, testName=str):
         
         # Search for a txt file in the current directory
         files_found = []
-        for file in os.listdir(self.currentDir):
+        for file in os.listdir(self.script_dir):
             if file.endswith('.txt') and testName in file:
                 files_found.append(file)
 
@@ -30,7 +30,8 @@ class Util:
         
         # If one TXT file is found, read it into a Pandas dataframe
         elif len(files_found) == 1:
-            df = pd.read_csv(os.path.join(self.currentDir, files_found[0]), delimiter='\t')
+            file_path = os.path.join(self.script_dir, files_found[0])
+            df = pd.read_csv(file_path, delimiter='\t')
             (f'Successfully read file: {files_found[0]}')
             return df
         
@@ -46,7 +47,8 @@ class Util:
                 log.info('Invalid input, please enter a number.')
                 return None
             if selection > 0 and selection <= len(files_found):
-                df = pd.read_csv(os.path.join(self.currentDir, files_found[selection-1]), delimiter='\t')
+                file_path = os.path.join(self.script_dir, files_found[0])
+                df = pd.read_csv(file_path, delimiter='\t')
                 log.info(f'Successfully read file: {files_found[selection-1]}')
                 return df
             else:
@@ -79,7 +81,7 @@ class Util:
     def getTestID(self):
 
         # get test ID from directory name
-        testID = os.path.basename(self.currentDir)
+        testID = os.path.basename(self.script_dir)
         return testID
     
     def askTestID(self):
@@ -120,14 +122,8 @@ class Util:
 
     def makeScoredDir(self, testID=str):
         
-        # Get the directory of the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Change the working directory to the script's directory
-        os.chdir(script_dir)
-        
         # Create a new directory for the scored files
-        newDir = os.path.join(self.currentDir, f'{testID}_scores')
+        newDir = os.path.join(self.script_dir, f'{testID}_scores')
         if os.path.exists(newDir):
             # If the directory already exists, prompt the user for input
             response = input(f"Directory {newDir} already exists.\n Do you want to overwrite it? Enter 'y' for yes or 'n' for no: ")
@@ -155,10 +151,10 @@ class Util:
             log.info(f'Successfully created directory: {newDir}')
 
         # Move all files with 'scores' in their name to the new scored directory and move the log file
-        for file in os.listdir(self.currentDir):
+        for file in os.listdir(self.script_dir):
             if 'scores' not in file:
                 if '_sc' in file or ".log" in file:
-                    filePath = os.path.join(self.currentDir, file)
+                    filePath = os.path.join(self.script_dir, file)
                     shutil.move(filePath, newDir)
                     log.info(f'Successfully moved {file} to {newDir}')
 
@@ -170,6 +166,9 @@ class Util:
 
     def outputToFile(self, list=list, filename=str):
         
+        # Declare output_path
+        output_path = self.script_dir
+        
         # Convert list to dataframe
         df = pd.DataFrame(list)
         
@@ -178,18 +177,18 @@ class Util:
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
             if self.fileOverride[0] == 'csv':
-                filename = f'{self.getTestID()}_{filename}.csv'
+                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
                 df.to_csv(filename, float_format='%.2f', index=False)
             elif self.fileOverride[0] == 'xlsx':
-                filename = f'{self.getTestID()}_{filename}.xlsx'
+                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
                 df.to_excel(filename, float_format='%.2f', index=False)
             elif self.fileOverride[0] == 'txt':
-                filename = f'{self.getTestID()}_{filename}.txt'
+                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
                 df.to_csv(filename, float_format='%.2f', index=False)
         else:
             
             # If override mode is disabled or the File is not specified, write dataframe to csv
-            filename = f'{self.getTestID()}_{filename}.csv'
+            filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
             df.to_csv(filename, float_format='%.2f', index=False)
 
     def initScoring(self, testName=str):
