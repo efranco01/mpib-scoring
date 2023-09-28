@@ -5,8 +5,9 @@ import logging as log
 import shutil
 import math
 
-# TODO: RT Cutoff at 200ms
-# TODO: Glossary of Variable Names
+# TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
+# TODO: Outputted file is being placed into root folder rather than the current, need to figure out why
+# TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests
 
 class Util:
     def __init__(self) -> None:
