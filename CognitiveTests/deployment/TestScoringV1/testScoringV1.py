@@ -6,17 +6,19 @@ import shutil
 import math
 
 # TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
-# TODO: Outputted file is being placed into root folder rather than the current, need to figure out why
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
 # TODO: Raplace NaN with "."
-# TODO: Give readable city block method
-# TODO: Update readme.md to readme.txt with SOP
+# TODO: Make city block distance into text
 # NOTE: When done with all changes, recompile exe for MAC and Windows
 
 
 class Util:
     def __init__(self) -> None:
-        self.currentDir = os.getcwd()
+        # self.currentDir = os.getcwd()
+        abspath = os.path.abspath(__file__)
+        dname = os.path.dirname(abspath)
+        self.currentDir = dname
+        os.chdir(dname)
 
     def findFile(self, testName=str):
         
@@ -36,6 +38,7 @@ class Util:
             df = pd.read_csv(os.path.join(self.currentDir, files_found[0]), delimiter='\t')
             (f'Successfully read file: {files_found[0]}')
             return df
+        
         # If multiple TXT files are found, prompt the user to select one
         else:
             log.info(f'{len(files_found)} files with the name {testName} found in current directory:')
@@ -118,7 +121,7 @@ class Util:
     def makeScoredDir(self, testID=str):
         
         # Create a new directory for the scored files
-        newDir = os.path.join(os.getcwd(), f'{testID}_scores')
+        newDir = os.path.join(self.currentDir, f'{testID}_scores')
         if os.path.exists(newDir):
             # If the directory already exists, prompt the user for input
             response = input(f"Directory {newDir} already exists.\n Do you want to overwrite it? Enter 'y' for yes or 'n' for no: ")
