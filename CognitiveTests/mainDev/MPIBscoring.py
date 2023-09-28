@@ -4,6 +4,7 @@ import os
 import logging as log
 import shutil
 import math
+import sys
 
 # TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
@@ -12,7 +13,7 @@ import math
 
 class Util:
     def __init__(self) -> None:
-        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.script_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
         os.chdir(self.script_dir)
 
     def findFile(self, testName=str):
@@ -121,6 +122,8 @@ class Util:
             raise ValueError("Invalid letter coordinate")
 
     def makeScoredDir(self, testID=str):
+        
+        print("Current working directory:", os.getcwd())
         
         # Create a new directory for the scored files
         newDir = os.path.join(self.script_dir, f'{testID}_scores')
