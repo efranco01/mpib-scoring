@@ -7,7 +7,6 @@ import math
 
 # TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
-# TODO: Raplace NaN with "."
 # TODO: Give readable city block method
 # NOTE: When done with all changes, recompile exe for MAC and Windows
 
@@ -90,7 +89,12 @@ class Util:
     def askTestID(self):
         
         # Prompt user for test ID
-        self.testID = input('Enter the test ID: ')
+        testIDQ = input('Would you like to enter the test ID? (y/n): ')
+        if testIDQ.lower() == 'y':
+            testID = input('Enter the test ID: ')
+            return testID
+        else:
+            return None
         
     def euclideanDistance(self, list1, list2):    
         # will return the distance between two points using the Euclidean method
@@ -167,7 +171,7 @@ class Util:
         # Convert list to dataframe
         df = pd.DataFrame(list)
         
-        df.fillna(value="NaN", inplace=True)
+        df.fillna(value=".", inplace=True)
         
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
