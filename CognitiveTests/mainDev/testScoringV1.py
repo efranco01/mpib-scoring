@@ -7,7 +7,12 @@ import math
 
 # TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
 # TODO: Outputted file is being placed into root folder rather than the current, need to figure out why
-# TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests
+# TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
+# TODO: Raplace NaN with "."
+# TODO: Give readable city block method
+# TODO: Update readme.md to readme.txt with SOP
+# NOTE: When done with all changes, recompile exe for MAC and Windows
+
 
 class Util:
     def __init__(self) -> None:
@@ -131,17 +136,19 @@ class Util:
                     i += 1
                 newDir = f'{newDir}_{i}'
                 os.mkdir(newDir)
+                print(f'Successfully created directory: {newDir}')
                 log.info(f'Successfully created directory: {newDir}')
 
         else:
             # If the directory does not exist, create a new one
             os.mkdir(newDir)
+            print(f'Successfully created directory: {newDir}')
             log.info(f'Successfully created directory: {newDir}')
 
         # Move all files with 'scores' in their name to the new scored directory and move the log file
         for file in os.listdir(self.currentDir):
             if 'scores' not in file:
-                if '_sc' in file: # or file == 'output.log'
+                if '_sc' in file or ".log" in file:
                     filePath = os.path.join(self.currentDir, file)
                     shutil.move(filePath, newDir)
                     log.info(f'Successfully moved {file} to {newDir}')
