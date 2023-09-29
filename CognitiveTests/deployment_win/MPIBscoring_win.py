@@ -5,10 +5,8 @@ import logging as log
 import shutil
 import math
 
-# TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
-# TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
-# TODO: Give readable city block method
-# NOTE: When done with all changes, recompile exe for MAC and Windows
+# TODO: RT Cutoff at 200ms
+# TODO: Glossary of Variable Names
 
 class Util:
     def __init__(self) -> None:
@@ -83,12 +81,7 @@ class Util:
     def askTestID(self):
         
         # Prompt user for test ID
-        testIDQ = input('Would you like to enter the test ID? (y/n): ')
-        if testIDQ.lower() == 'y':
-            testID = input('Enter the test ID: ')
-            return testID
-        else:
-            return None
+        self.testID = input('Enter the test ID: ')
         
     def euclideanDistance(self, list1, list2):    
         # will return the distance between two points using the Euclidean method
@@ -153,7 +146,7 @@ class Util:
         # Move all files with 'scores' in their name to the new scored directory and move the log file
         for file in os.listdir(self.currentDir):
             if 'scores' not in file:
-                if '_sc' in file:
+                if '_sc' in file: # or file == 'output.log'
                     filePath = os.path.join(self.currentDir, file)
                     shutil.move(filePath, newDir)
                     log.info(f'Successfully moved {file} to {newDir}')
@@ -169,7 +162,7 @@ class Util:
         # Convert list to dataframe
         df = pd.DataFrame(list)
         
-        df.fillna(value=".", inplace=True)
+        df.fillna(value="NaN", inplace=True)
         
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
@@ -206,6 +199,9 @@ class Util:
         return subsetList
     
     def initOverride(self):
+        
+        # TODO: Finish Block Override
+        # TODO: Override option to filter 0s from response time
         
         input('Override mode enabled. Press enter to continue.')
         overrideDict = {"Test": [], "Block": [], "File": []}
