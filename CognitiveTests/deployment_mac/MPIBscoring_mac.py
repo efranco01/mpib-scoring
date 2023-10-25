@@ -15,7 +15,7 @@ class Util:
         
     def findDirectory(self, testID=str):
         for dir in os.listdir(os.getcwd()):
-            if testID in dir:
+            if testID in dir and os.path.isdir(os.path.join(os.getcwd(), dir)):
                 # If a directory is found, change the current directory to that directory
                 os.chdir(os.path.join(os.getcwd(), dir))
                 print('The working directory has been changed to:', os.getcwd())
@@ -23,13 +23,14 @@ class Util:
         log.info(f'No directory named {testID} found in current directory, checking for files')
         return None
 
-    def findFile(self, testName=str):
+    def findFile(self, testName=str): # Need to exclude ._ files
         
         # Search for a txt file in the current directory
         files_found = []
         for file in os.listdir(os.getcwd()):
             if file.endswith('.txt') and testName in file:
-                files_found.append(file)
+                if file.startswith('._') == False:
+                    files_found.append(file)
 
         # If no TXT file is found, return None
         if len(files_found) == 0:
