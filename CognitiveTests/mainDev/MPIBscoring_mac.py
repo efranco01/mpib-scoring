@@ -4,13 +4,12 @@ import os
 import logging as log
 import shutil
 import math
-import sys
 
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
 
 class Util:
     def __init__(self) -> None:
-        self.script_dir = os.path.sep.join(sys.argv[0].split(os.path.sep)[:-1])
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
         os.chdir(self.script_dir)
         
     def findDirectory(self, testID=str):
