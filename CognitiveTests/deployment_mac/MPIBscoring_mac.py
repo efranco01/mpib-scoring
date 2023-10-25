@@ -6,21 +6,28 @@ import shutil
 import math
 import sys
 
-# TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
-# TODO: Give readable city block method
-# NOTE: When done with all changes, recompile exe for MAC and Windows
 
 class Util:
     def __init__(self) -> None:
         self.script_dir = os.path.sep.join(sys.argv[0].split(os.path.sep)[:-1])
         os.chdir(self.script_dir)
+        
+    def findDirectory(self, testID=str):
+        for dir in os.listdir(os.getcwd()):
+            if testID in dir:
+                # If a directory is found, change the current directory to that directory
+                os.chdir(os.path.join(os.getcwd(), dir))
+                print('The working directory has been changed to:', os.getcwd())
+        # If no directory is found, return error message
+        log.info(f'No directory named {testID} found in current directory, checking for files')
+        return None
 
     def findFile(self, testName=str):
         
         # Search for a txt file in the current directory
         files_found = []
-        for file in os.listdir(self.script_dir):
+        for file in os.listdir(os.getcwd()):
             if file.endswith('.txt') and testName in file:
                 files_found.append(file)
 
@@ -31,30 +38,18 @@ class Util:
         
         # If one TXT file is found, read it into a Pandas dataframe
         elif len(files_found) == 1:
-            file_path = os.path.join(self.script_dir, files_found[0])
+            file_path = os.path.join(os.getcwd(), files_found[0])
             df = pd.read_csv(file_path, delimiter='\t')
-            (f'Successfully read file: {files_found[0]}')
+            log.info(f'Successfully read file: {files_found[0]}')
             return df
         
-        # If multiple TXT files are found, prompt the user to select one
-        else:
-            log.info(f'{len(files_found)} files with the name {testName} found in current directory:')
-            for i, file in enumerate(files_found):
-                log.info(f'{i+1}. {file}')
-            selection = input('Please select the file you want to read (enter number): ')
-            try:
-                selection = int(selection)
-            except:
-                log.info('Invalid input, please enter a number.')
-                return None
-            if selection > 0 and selection <= len(files_found):
-                file_path = os.path.join(self.script_dir, files_found[0])
-                df = pd.read_csv(file_path, delimiter='\t')
-                log.info(f'Successfully read file: {files_found[selection-1]}')
-                return df
-            else:
-                log.info(f'Invalid selection: {selection}. Please enter a number between 1 and {len(files_found)}.')
-                return None
+        # If duplicate tests are found, score one of them and return the dataframe (add input for which one to score)
+        elif len(files_found) > 1:
+            choice = input(f'Duplicate tests found: {files_found}, which one would you like to score? (enter a number starting from 0): ')
+            file_path = os.path.join(os.getcwd(), files_found[int(choice)])
+            df = pd.read_csv(file_path, delimiter='\t')
+            log.info(f'Successfully read file: {files_found[int(choice)]}')
+            return df
 
     def getBlockType(self, df=pd.DataFrame, blockLoc=4):
         
@@ -78,22 +73,21 @@ class Util:
         
         # Return the list of dataframes
         return subsetList
-
-    def getTestID(self):
+    
+    def initialDir(self):
+        return self.script_dir
+        
+    def getTestID(self): # Not being used currently
 
         # get test ID from directory name
-        testID = os.path.basename(self.script_dir)
+        testID = os.path.basename(os.getcwd())
         return testID
     
     def askTestID(self):
         
         # Prompt user for test ID
-        testIDQ = input('Would you like to enter the test ID? (y/n): ')
-        if testIDQ.lower() == 'y':
-            testID = input('Enter the test ID: ')
-            return testID
-        else:
-            return None
+        testID = input('Please enter the test ID: ')
+        return testID
         
     def euclideanDistance(self, list1, list2):    
         # will return the distance between two points using the Euclidean method
@@ -121,22 +115,24 @@ class Util:
         else:
             raise ValueError("Invalid letter coordinate")
 
-    def makeScoredDir(self, testID=str):
+    def makeScoredDir(self):
         
         print("Current working directory:", os.getcwd())
         
         # Create a new directory for the scored files
-        newDir = os.path.join(self.script_dir, f'{testID}_scores')
+        newDir = os.path.join(os.getcwd(), f'{self.testID}_scores')
         if os.path.exists(newDir):
             # If the directory already exists, prompt the user for input
             response = input(f"Directory {newDir} already exists.\n Do you want to overwrite it? Enter 'y' for yes or 'n' for no: ")
             while response.lower() not in ['y', 'n']:
                 response = input("Invalid input. Enter 'y' for yes or 'n' for no: ")
+            
             if response.lower() == 'y':
                 # If the user types 'y', delete the existing directory and create a new one
                 shutil.rmtree(newDir)
                 os.mkdir(newDir)
                 log.info(f'Successfully created directory: {newDir}')
+            
             elif response.lower() == 'n':
                 # If the user types 'n', add an iterator to the directory name and create a new one
                 i = 1
@@ -146,7 +142,7 @@ class Util:
                 os.mkdir(newDir)
                 print(f'Successfully created directory: {newDir}')
                 log.info(f'Successfully created directory: {newDir}')
-
+        
         else:
             # If the directory does not exist, create a new one
             os.mkdir(newDir)
@@ -154,10 +150,10 @@ class Util:
             log.info(f'Successfully created directory: {newDir}')
 
         # Move all files with 'scores' in their name to the new scored directory and move the log file
-        for file in os.listdir(self.script_dir):
+        for file in os.listdir(os.getcwd()):
             if 'scores' not in file:
                 if '_sc' in file or ".log" in file:
-                    filePath = os.path.join(self.script_dir, file)
+                    filePath = os.path.join(os.getcwd(), file)
                     shutil.move(filePath, newDir)
                     log.info(f'Successfully moved {file} to {newDir}')
 
@@ -170,28 +166,28 @@ class Util:
     def outputToFile(self, list=list, filename=str):
         
         # Declare output_path
-        output_path = self.script_dir
+        output_path = os.getcwd()
         
         # Convert list to dataframe
         df = pd.DataFrame(list)
         
-        df.fillna(value=".", inplace=True)
+        df.fillna(value="NA", inplace=True)
         
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
             if self.fileOverride[0] == 'csv':
-                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
+                filename = os.path.join(output_path, f'{self.testID}_{filename}.csv')
                 df.to_csv(filename, float_format='%.2f', index=False)
             elif self.fileOverride[0] == 'xlsx':
-                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
+                filename = os.path.join(output_path, f'{self.testID}_{filename}.csv')
                 df.to_excel(filename, float_format='%.2f', index=False)
             elif self.fileOverride[0] == 'txt':
-                filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
+                filename = os.path.join(output_path, f'{self.testID}_{filename}.csv')
                 df.to_csv(filename, float_format='%.2f', index=False)
+        
         else:
-            
             # If override mode is disabled or the File is not specified, write dataframe to csv
-            filename = os.path.join(output_path, f'{self.getTestID()}_{filename}.csv')
+            filename = os.path.join(output_path, f'{self.testID}_{filename}.csv')
             df.to_csv(filename, float_format='%.2f', index=False)
 
     def initScoring(self, testName=str):
@@ -202,25 +198,24 @@ class Util:
         # If there is no file, skip scoring
         if df is None:
             return None
-
+        
         # Get block types
         blockTypes = self.getBlockType(df)
-
+        
         # Subset data by block type
         subsetList = self.subsetByBlock(df, blockTypes)
-
         return subsetList
     
     def initOverride(self):
         
         input('Override mode enabled. Press enter to continue.')
-        overrideDict = {"Test": [], "Block": [], "File": []}
+        overrideDict = {"Test": [], "File": []}
 
-        # Ask for settings to override (e.g. test name, block types, file output type, etc.)
+        # Ask for settings to override (e.g. test name, file output type, etc.)
         while True:
-            setting = input("Enter a setting to override [Test (name of test), Block (block type), File (file type to output ex. csv, xlsx, txt)]: ")
+            setting = input("Enter a setting to override [Test (name of test), File (file type to output ex. csv, xlsx, txt)]: ")
             if setting not in overrideDict.keys():
-                print("Invalid setting. Please enter 'Test', 'Block', or 'File'.")
+                print("Invalid setting. Please enter 'Test' or 'File'.")
                 continue
 
             # Take each input as a list
@@ -298,8 +293,14 @@ class Util:
             
     def runMain(self):
         
+        # Ask user for test ID
+        self.testID = self.askTestID()
+        
         # Ask user if they want to run in override mode
         self.overrideBool = self.askOverride()
+        
+        # Find the directory with the test ID
+        self.findDirectory(self.testID)
         
         if self.overrideBool == True:
             # If override mode is enabled, ask user for settings to override
@@ -322,7 +323,7 @@ class Scoring(Util):
     def fsScore(self):
 
         # initialize scoring
-        blockDfs = self.initScoring('FiguralSpeed')
+        blockDfs = self.initScoring(f'{self.testID}_FiguralSpeed')
 
         # check if scoring was successful
         if blockDfs is None:
@@ -350,7 +351,7 @@ class Scoring(Util):
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Trials': block.iloc[:, 13].count(),
@@ -376,7 +377,7 @@ class Scoring(Util):
         # TODO: LU add mean streak length correct vs incorrect
 
         # initialize scoring
-        blockDfs = self.initScoring('LetterUpdating')
+        blockDfs = self.initScoring(f'{self.testID}_LetterUpdating')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -392,7 +393,7 @@ class Scoring(Util):
             totalTrials = block.iloc[:, 18].count()  
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockName,
                 'PC': pc,
                 'Trials': totalTrials
@@ -402,10 +403,10 @@ class Scoring(Util):
 
     def msScore(self):
         
-        # TODO: MS sort errors by square (will be in the nitty gritty area)
+        # TODO: MS sort errors by square
 
         # initialize scoring
-        blockDfs = self.initScoring('MotoricSpeed')
+        blockDfs = self.initScoring(f'{self.testID}_MotoricSpeed')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -434,7 +435,7 @@ class Scoring(Util):
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalTrials,
@@ -458,7 +459,7 @@ class Scoring(Util):
     def nmScore(self):
 
         # initialize scoring
-        blockDfs = self.initScoring('NumberMemory')
+        blockDfs = self.initScoring(f'{self.testID}_NumberMemory')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -487,7 +488,7 @@ class Scoring(Util):
             numZeroInputs = block[block.iloc[:, 11] == 0].iloc[:, 11].count()
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalTrials,
@@ -512,7 +513,7 @@ class Scoring(Util):
     def nbScore(self):
 
         # initialize scoring
-        blockDfs = self.initScoring('Numerical_nBack')
+        blockDfs = self.initScoring(f'{self.testID}_Numerical_nBack')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -543,7 +544,7 @@ class Scoring(Util):
             
 
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Total Correct': totalCorrect,
@@ -568,7 +569,7 @@ class Scoring(Util):
     def nsScore(self):
     
         # initialize scoring
-        blockDfs = self.initScoring('NumericalSpeed')
+        blockDfs = self.initScoring(f'{self.testID}_NumericalSpeed')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -598,7 +599,7 @@ class Scoring(Util):
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalCorrect,
@@ -622,7 +623,7 @@ class Scoring(Util):
     def stScore(self):
     
         # initialize scoring
-        blockDfs = self.initScoring('SpeedTabbing')
+        blockDfs = self.initScoring(f'{self.testID}_SpeedTabbing')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -643,7 +644,7 @@ class Scoring(Util):
             lastPress = block.iloc[-1, 10]
 
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'Presses': numPresses,
                 'Mean RT': responseTimes,
@@ -659,7 +660,7 @@ class Scoring(Util):
     def vsScore(self):
 
         # initialize scoring
-        blockDfs = self.initScoring('VerbalSpeed')
+        blockDfs = self.initScoring(f'{self.testID}_VerbalSpeed')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -689,7 +690,7 @@ class Scoring(Util):
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'PC (Same)': pcSame,
@@ -718,7 +719,7 @@ class Scoring(Util):
         # TODO: Add a matrix representation of the grid showing correct vs incorrect responses
         
         # initialize scoring
-        blockDfs = self.initScoring('ObjectLocationMemory')
+        blockDfs = self.initScoring(f'{self.testID}_ObjectLocationMemory')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -787,7 +788,7 @@ class Scoring(Util):
             meanCityBlockDist = np.array(list(cellDistancesCityBlock.values())).mean()
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Total RT': responseTimes,
@@ -826,7 +827,7 @@ class Scoring(Util):
         # TODO: Check ED and CB calculations
 
         # initialize scoring
-        blockDfs = self.initScoring('SpatialUpdating')
+        blockDfs = self.initScoring(f'{self.testID}_SpatialUpdating')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -863,7 +864,7 @@ class Scoring(Util):
             }
             
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC Grid 1': pcGrid1,
                 'PC Grid 2': pcGrid2,
@@ -882,7 +883,7 @@ class Scoring(Util):
     def wrScore(self):
 
         # initialize scoring
-        blockDfs = self.initScoring('WordRecall')
+        blockDfs = self.initScoring(f'{self.testID}_WordRecall')
         
         # check if scoring was successful
         if blockDfs is None:
@@ -899,7 +900,7 @@ class Scoring(Util):
             # proportion incorrect (i.e., no intrusions)
             pi = (block.iloc[:, 23].item() - block.iloc[:, 24].item() - block.iloc[:, 25].item()) / block.iloc[:, 23].item() 
             blockData.append({
-                'ID': self.getTestID(),
+                'ID': self.testID,
                 'Block': blockType,
                 'PC': pc,
                 'Prop Intrusions': intrusions,
@@ -919,7 +920,30 @@ if __name__ == '__main__':
     scoringTime.runMain()
 
     # organize the data
-    scoringTime.makeScoredDir(scoringTime.getTestID())
+    scoringTime.makeScoredDir()
 
     # print a message to the console
     print('Done!')
+    
+    # ask if there are any other IDs to score
+    while True:
+        
+        # Return to initial directory
+        os.chdir(scoringTime.initialDir())
+        
+        # ask if there are any other IDs to score
+        moreIDs = input('Are there any other IDs to score? (y/n): ')
+        if moreIDs == 'y':
+            # run the main function
+            scoringTime.runMain()
+
+            # organize the data
+            scoringTime.makeScoredDir()
+
+            # print a message to the console
+            print('Done!')
+        elif moreIDs == 'n':
+            break
+        else:
+            print('Invalid input. Please enter y or n.')
+            continue

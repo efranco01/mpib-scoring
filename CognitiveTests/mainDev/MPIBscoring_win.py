@@ -8,6 +8,8 @@ import math
 # TODO: Add input for testname in ui (input testname --> search for directory with name in current folder)
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
 # TODO: Give readable city block method
+# TODO: Change "." to "NA"
+# TODO: Account for duplicate named files in the same folder, mark them with a number, then continue with the process as usual
 
 class Util:
     def __init__(self) -> None:
