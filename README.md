@@ -28,7 +28,7 @@ Override Mode: Allows the user to input specific commands into the program
 -Block (acceptable inputs): N/A
 -File (acceptable inputs): csv, xlsx, txt
 
-Glossary
+Glossary:
 
 ID: Subject ID number
 Block: Practice run or trial run (numbered in order)
