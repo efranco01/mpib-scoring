@@ -6,6 +6,11 @@ import shutil
 import math
 
 # TODO: Add matrix representation of correct/incorrect positions of OLM and SU tests (heatmap)
+# TODO: Add distinction between 1st and 2nd time in the naming of test files
+    # TODO: Add input for visit after the test ID (e.g. 1st, 2nd, 3rd, etc.). Separate by spaces and make sure the run through the main process for both
+    # TODO: Add visit column to output files (after ID)
+# TODO: Check the usage of NA in motSpd and make sure to add the meaning to the glossary
+# TODO: Update the SOP with the new scoring method --> add pictures!!!! --> add a section for each test!
 
 class Util:
     def __init__(self) -> None:
