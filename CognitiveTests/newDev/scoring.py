@@ -29,10 +29,10 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
             minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
-            maxResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponseTimeCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
-            maxResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
-            minResponseTimeIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+            maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+            maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
+            minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
             
             blockData.append({
@@ -41,19 +41,19 @@ class Scoring(Util):
                 'Block': blockType,
                 'PC': pc,
                 'Trials': block.iloc[:, 13].count(),
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseTimeCorrect,
-                'Min RT (C)': minResponseTimeCorrect,
-                'Max RT (I)': maxResponseTimeIncorrect,
-                'Min RT (I)': minResponseTimeIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'figSpd_sc')
@@ -115,10 +115,10 @@ class Scoring(Util):
             medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
             maxResponseTime = block.iloc[:, 14].max()
             minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
-            maxResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].max()
-            minResponseTimeCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
-            maxResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].max()
-            minResponseTimeIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+            maxResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].max()
+            minResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+            maxResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].max()
+            minResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
             blockData.append({
@@ -127,19 +127,19 @@ class Scoring(Util):
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalTrials,
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseTimeCorrect,
-                'Min RT (C)': minResponseTimeCorrect,
-                'Max RT (I)': maxResponseTimeIncorrect,
-                'Min RT (I)': minResponseTimeIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'motSpd_sc')
@@ -181,19 +181,19 @@ class Scoring(Util):
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalTrials,
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseCorrect,
-                'Min RT (C)': minResponseCorrect,
-                'Max RT (I)': maxResponseIncorrect,
-                'Min RT (I)': minResponseIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numMem_sc')
@@ -226,7 +226,7 @@ class Scoring(Util):
             maxResponseTime = block.iloc[:, 14].max()
             minResponseTime = block.iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].max()
-            minResponceCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+            minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
             minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
             numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
@@ -239,19 +239,19 @@ class Scoring(Util):
                 'PC': pc,
                 'Total Correct': totalCorrect,
                 'Trials': totalTrials,
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseCorrect,
-                'Min RT (C)': minResponceCorrect,
-                'Max RT (I)': maxResponseIncorrect,
-                'Min RT (I)': minResponseIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numNB_sc')
@@ -294,19 +294,19 @@ class Scoring(Util):
                 'Block': blockType,
                 'PC': pc,
                 'Trials': totalCorrect,
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseCorrect,
-                'Min RT (C)': minResponseCorrect,
-                'Max RT (I)': maxResponseIncorrect,
-                'Min RT (I)': minResponseIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'numSpd_sc')
@@ -339,12 +339,12 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': blockType,
                 'Presses': numPresses,
-                'Mean RT': responseTimes,
-                'Med RT': medianResponseTime,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'First Press': firstPress,
-                'Last Press': lastPress
+                'Mean_RT': responseTimes,
+                'Med_RT': medianResponseTime,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'First_Press': firstPress,
+                'Last_Press': lastPress
             })
 
         self.outputToFile(blockData, 'spdTab_sc')
@@ -388,19 +388,19 @@ class Scoring(Util):
                 'PC': pc,
                 'PC (Same)': pcSame,
                 'PC (Different)': pcDifferent,
-                'Mean RT': responseTimes,
-                'Mean RT (C)': responseCorrect,
-                'Mean RT (I)': responseIncorrect,
-                'Med RT': medianResponseTime,
-                'Med RT (C)': medianResponseCorrect,
-                'Med RT (I)': medianResponseIncorrect,
-                'Max RT': maxResponseTime,
-                'Min RT': minResponseTime,
-                'Max RT (C)': maxResponseCorrect,
-                'Min RT (C)': minResponseCorrect,
-                'Max RT (I)': maxResponseIncorrect,
-                'Min RT (I)': minResponseIncorrect,
-                'Num 0': numZeroInputs
+                'Mean_RT': responseTimes,
+                'Mean_RT_C': responseCorrect,
+                'Mean_RT_I': responseIncorrect,
+                'Med_RT': medianResponseTime,
+                'Med_RT_C': medianResponseCorrect,
+                'Med_RT_I': medianResponseIncorrect,
+                'Max_RT': maxResponseTime,
+                'Min_RT': minResponseTime,
+                'Max_RT_C': maxResponseCorrect,
+                'Min_RT_C': minResponseCorrect,
+                'Max_RT_I': maxResponseIncorrect,
+                'Min_RT_I': minResponseIncorrect,
+                'Num_0': numZeroInputs
             })
 
         self.outputToFile(blockData, 'verbSpd_sc')
@@ -484,33 +484,33 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': blockType,
                 'PC': pc,
-                'Total RT': responseTimes,
-                'Mean ED': meanEuclideanDist,
-                'Mean CB': meanCityBlockDist,
-                'ED 1': cellDistancesEuclidean['1'],
-                'ED 2': cellDistancesEuclidean['2'],
-                'ED 3': cellDistancesEuclidean['3'],
-                'ED 4': cellDistancesEuclidean['4'],
-                'ED 5': cellDistancesEuclidean['5'],
-                'ED 6': cellDistancesEuclidean['6'],
-                'ED 7': cellDistancesEuclidean['7'],
-                'ED 8': cellDistancesEuclidean['8'],
-                'ED 9': cellDistancesEuclidean['9'],
-                'ED 10': cellDistancesEuclidean['10'],
-                'ED 11': cellDistancesEuclidean['11'],
-                'ED 12': cellDistancesEuclidean['12'],
-                'CB 1': cellDistancesCityBlock['1'],
-                'CB 2': cellDistancesCityBlock['2'],
-                'CB 3': cellDistancesCityBlock['3'],
-                'CB 4': cellDistancesCityBlock['4'],
-                'CB 5': cellDistancesCityBlock['5'],
-                'CB 6': cellDistancesCityBlock['6'],
-                'CB 7': cellDistancesCityBlock['7'],
-                'CB 8': cellDistancesCityBlock['8'],
-                'CB 9': cellDistancesCityBlock['9'],
-                'CB 10': cellDistancesCityBlock['10'],
-                'CB 11': cellDistancesCityBlock['11'],
-                'CB 12': cellDistancesCityBlock['12']
+                'Total_RT': responseTimes,
+                'Mean_ED': meanEuclideanDist,
+                'Mean_CB': meanCityBlockDist,
+                'ED_1': cellDistancesEuclidean['1'],
+                'ED_2': cellDistancesEuclidean['2'],
+                'ED_3': cellDistancesEuclidean['3'],
+                'ED_4': cellDistancesEuclidean['4'],
+                'ED_5': cellDistancesEuclidean['5'],
+                'ED_6': cellDistancesEuclidean['6'],
+                'ED_7': cellDistancesEuclidean['7'],
+                'ED_8': cellDistancesEuclidean['8'],
+                'ED_9': cellDistancesEuclidean['9'],
+                'ED_10': cellDistancesEuclidean['10'],
+                'ED_11': cellDistancesEuclidean['11'],
+                'ED_12': cellDistancesEuclidean['12'],
+                'CB_1': cellDistancesCityBlock['1'],
+                'CB_2': cellDistancesCityBlock['2'],
+                'CB_3': cellDistancesCityBlock['3'],
+                'CB_4': cellDistancesCityBlock['4'],
+                'CB_5': cellDistancesCityBlock['5'],
+                'CB_6': cellDistancesCityBlock['6'],
+                'CB_7': cellDistancesCityBlock['7'],
+                'CB_8': cellDistancesCityBlock['8'],
+                'CB_9': cellDistancesCityBlock['9'],
+                'CB_10': cellDistancesCityBlock['10'],
+                'CB_11': cellDistancesCityBlock['11'],
+                'CB_12': cellDistancesCityBlock['12']
             })
 
         self.outputToFile(blockData, 'objLocMem_sc')
@@ -560,16 +560,16 @@ class Scoring(Util):
                 'ID': self.testID,
                 'Visit': self.currentVisit,
                 'Block': blockType,
-                'PC Grid 1': pcGrid1,
-                'PC Grid 2': pcGrid2,
-                'PC Grid 3': pcGrid3,
-                'PC Total': pcTotal,
-                'ED Grid 1': cellED['1'],
-                'ED Grid 2': cellED['2'],
-                'ED Grid 3': cellED['3'],
-                'CB Grid 1': cellCB['1'],
-                'CB Grid 2': cellCB['2'],
-                'CB Grid 3': cellCB['3']
+                'PC_Grid_1': pcGrid1,
+                'PC_Grid_2': pcGrid2,
+                'PC_Grid_3': pcGrid3,
+                'PC_Total': pcTotal,
+                'ED_Grid_1': cellED['1'],
+                'ED_Grid_2': cellED['2'],
+                'ED_Grid_3': cellED['3'],
+                'CB_Grid_1': cellCB['1'],
+                'CB_Grid_2': cellCB['2'],
+                'CB_Grid_3': cellCB['3']
             })
 
         self.outputToFile(blockData, 'spatUp_sc')
@@ -598,8 +598,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': blockType,
                 'PC': pc,
-                'Prop Intrusions': intrusions,
-                'PI (No Intrusions)': pi
+                'Prop_Intrusions': intrusions,
+                'Prop_Incorrect_No_Int)': pi
             })
 
         self.outputToFile(blockData, 'wrdRec_sc')

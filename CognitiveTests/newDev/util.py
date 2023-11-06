@@ -5,6 +5,16 @@ import shutil
 import math
 import sys
 
+# TODO: Some subjects have a raw text file for a certain task missing, add an auto generated output csv file with the same format but with NA as values.
+'''
+if os.path.exists(os.path.join(os.getcwd(), 'test.txt')) == False:
+    df = pd.DataFrame({'A': [np.nan]})
+    df.to_csv('test.txt', index=False)
+'''
+# TODO: Take a look at reaction time calculations and determine the cause for NA values. Make sure they are consistent in their usage.
+# TODO: Add a matrix representation of OLM and SU tests, show the density of correct/incorrect answers using a heatmap.+
+# TODO: There is an issue with the input system, need to test and check for bugs
+
 class Util:
     def __init__(self) -> None:
         if os.name == 'nt': # Check if OS is Windows
