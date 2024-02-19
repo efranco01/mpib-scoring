@@ -1,0 +1,4 @@
+ID,Visit,Block,PC_Grid_1,PC_Grid_2,PC_Grid_3,PC_Total,ED_Grid_1,ED_Grid_2,ED_Grid_3,CB_Grid_1,CB_Grid_2,CB_Grid_3
+1001,1st,PRACT,1.00,0.25,0.50,0.00,0.00,0.00,0.00,0,1,0
+1001,1st,TRIAL1,0.80,0.40,0.20,0.20,0.00,1.41,0.00,0,1,1
+1001,1st,TRIAL2,0.40,0.40,0.40,0.00,0.00,1.41,0.00,0,1,0
