@@ -1,6 +1,7 @@
 from util import Util
 import numpy as np
 
+
 class Scoring(Util):
     def __init__(self) -> None:
         super().__init__()
@@ -20,6 +21,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
+                'PC (Same)': 'NA',
+                'PC (Different)': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
@@ -42,6 +45,8 @@ class Scoring(Util):
             for block in blockDfs:
                 blockType = block.iloc[0, 4]
                 pc = block.iloc[:, 13].mean()
+                pcSame = block[block.iloc[:, 8] == 1].iloc[:, 13].mean()
+                pcDifferent = block[block.iloc[:, 8] == 2].iloc[:, 13].mean()
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
@@ -61,6 +66,8 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockType,
                     'PC': pc,
+                    'PC (Same)': pcSame,
+                    'PC (Different)': pcDifferent,
                     'Trials': block.iloc[:, 13].count(),
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
@@ -363,6 +370,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
+                'PC (Same)': 'NA',
+                'PC (Different)': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
@@ -385,6 +394,8 @@ class Scoring(Util):
             for block in blockDfs:
                 blockType = block.iloc[0, 4]
                 pc = block.iloc[:, 13].mean()
+                pcSame = block[block.iloc[:, 8] == 1].iloc[:, 13].mean()
+                pcDifferent = block[block.iloc[:, 8] == 2].iloc[:, 13].mean()
                 totalCorrect = block.iloc[:, 13].sum()
                 # Don't include 0s in response time calculation
                 responseTimes = block.iloc[:, 14].mean()
@@ -406,6 +417,8 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockType,
                     'PC': pc,
+                    'PC (Same)': pcSame,
+                    'PC (Different)': pcDifferent,
                     'Trials': totalCorrect,
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
@@ -491,6 +504,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
+                'PC (Same)': 'NA',
+                'PC (Different)': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
