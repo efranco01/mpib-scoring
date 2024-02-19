@@ -312,6 +312,8 @@ class Scoring(Util):
             
             # score each block (this will be general scores)
             for block in blockDfs:
+                # remove the first three rows, as they are not part of the test
+                block = block.iloc[3:]
                 blockType = block.iloc[0, 5]
                 pc = block.iloc[:, 13].mean()
                 totalCorrect = block.iloc[:, 13].sum()
