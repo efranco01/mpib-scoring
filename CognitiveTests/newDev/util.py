@@ -5,15 +5,6 @@ import shutil
 import math
 import sys
 
-# TODO: Some subjects have a raw text file for a certain task missing, add an auto generated output csv file with the same format but with NA as values.
-'''
-if os.path.exists(os.path.join(os.getcwd(), 'test.txt')) == False:
-    df = pd.DataFrame({'A': [np.nan]})
-    df.to_csv('test.txt', index=False)
-'''
-# TODO: Take a look at reaction time calculations and determine the cause for NA values. Make sure they are consistent in their usage.
-# TODO: Add a matrix representation of OLM and SU tests, show the density of correct/incorrect answers using a heatmap.+
-# TODO: There is an issue with the input system, need to test and check for bugs
 
 class Util:
     def __init__(self) -> None:
@@ -109,14 +100,14 @@ class Util:
         # If one TXT file is found, read it into a Pandas dataframe
         elif len(files_found) == 1:
             file_path = os.path.join(os.getcwd(), files_found[0])
-            df = pd.read_csv(file_path, delimiter='\t')
+            df = pd.read_csv(file_path, delimiter='\t', header=None)
             return df
         
         # If duplicate tests are found, score one of them and return the dataframe (add input for which one to score)
         elif len(files_found) > 1:
             choice = input(f'Duplicate tests found: {files_found}, which one would you like to score? (enter a number starting from 0): ')
             file_path = os.path.join(os.getcwd(), files_found[int(choice)])
-            df = pd.read_csv(file_path, delimiter='\t')
+            df = pd.read_csv(file_path, delimiter='\t', header=None)
             return df
         
     def findInput(self, visit=list, testID=str):
