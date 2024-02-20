@@ -27,6 +27,9 @@ class Scoring(Util):
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
                 'Mean_RT_I': 'NA',  
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA',
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -50,6 +53,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+                stdResponseTimes = block.iloc[:, 14].std()
+                stdResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].std()
+                stdResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].std()
                 medianResponseTime = block.iloc[:, 14].median()
                 medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
                 medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
@@ -72,6 +78,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -87,8 +96,6 @@ class Scoring(Util):
         self.outputToFile(blockData, 'figSpd_sc')
 
     def luScore(self):
-        
-        # TODO: LU add mean streak length correct vs incorrect
 
         # initialize scoring
         blockDfs = self.initScoring(f'{self.testID}_LetterUpdating')
@@ -103,6 +110,7 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
+                'Mean_Streak': 'NA',
                 'Trials': 'NA',
             })
 
@@ -112,7 +120,7 @@ class Scoring(Util):
             for block in blockDfs:
                 blockName = block.iloc[0, 4]
                 pc = block.iloc[:, 18].mean() / 3
-                totalTrials = block.iloc[:, 18].count()  
+                totalTrials = block.iloc[:, 18].count()
                 
                 blockData.append({
                     'ID': self.testID,
@@ -125,8 +133,6 @@ class Scoring(Util):
         self.outputToFile(blockData, 'letUp_sc')
 
     def msScore(self):
-        
-        # TODO: MS sort errors by square
 
         # initialize scoring
         blockDfs = self.initScoring(f'{self.testID}_MotoricSpeed')
@@ -144,7 +150,10 @@ class Scoring(Util):
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
-                'Mean_RT_I': 'NA',  
+                'Mean_RT_I': 'NA',
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA',
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -167,6 +176,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].mean()
+                stdResponseTimes = block.iloc[:, 14].std()
+                stdResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].std()
+                stdResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].std()
                 medianResponseTime = block.iloc[:, 14].median()
                 medianResponseCorrect = block[block.iloc[:, 15] == 1].iloc[:, 14].median()
                 medianResponseIncorrect = block[block.iloc[:, 15] == 0].iloc[:, 14].median()
@@ -187,6 +199,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -220,6 +235,9 @@ class Scoring(Util):
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
                 'Mean_RT_I': 'NA',  
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA',
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -242,6 +260,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 11].mean()
                 responseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].mean()
                 responseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].mean()
+                stdResponseTimes = block.iloc[:, 11].std()
+                stdResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].std()
+                stdResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].std()
                 medianResponseTime = block.iloc[:, 11].median()
                 medianResponseCorrect = block[block.iloc[:, 10] == 1].iloc[:, 11].median()
                 medianResponseIncorrect = block[block.iloc[:, 10] == 0].iloc[:, 11].median()
@@ -262,6 +283,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -296,6 +320,9 @@ class Scoring(Util):
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
                 'Mean_RT_I': 'NA',  
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA',
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -321,6 +348,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+                stdResponseTimes = block.iloc[:, 14].std()
+                stdResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].std()
+                stdResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].std()
                 medianResponseTime = block.iloc[:, 14].median()
                 medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
                 medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
@@ -343,6 +373,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -377,7 +410,10 @@ class Scoring(Util):
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
-                'Mean_RT_I': 'NA',  
+                'Mean_RT_I': 'NA',
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA',
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -403,6 +439,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+                stdResponseTimes = block.iloc[:, 14].std()
+                stdResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].std()
+                stdResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].std()
                 medianResponseTime = block.iloc[:, 14].median()
                 medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
                 medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
@@ -425,6 +464,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -456,6 +498,7 @@ class Scoring(Util):
                 'PC': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
+                'Std_RT': 'NA',
                 'Med_RT': 'NA',
                 'Max_RT': 'NA',
                 'Min_RT': 'NA',
@@ -470,6 +513,7 @@ class Scoring(Util):
                 blockType = block.iloc[0, 4]
                 numPresses = block.iloc[:, 5].count()
                 responseTimes = block.iloc[:, 10].mean()
+                stdResponseTimes = block.iloc[:, 10].std()
                 medianResponseTime = block.iloc[:, 10].median()
                 maxResponseTime = block.iloc[:, 10].max()
                 minResponseTime = block.iloc[:, 10][block.iloc[:, 10] >= 200].min()
@@ -482,6 +526,7 @@ class Scoring(Util):
                     'Block': blockType,
                     'Presses': numPresses,
                     'Mean_RT': responseTimes,
+                    'Std_RT': stdResponseTimes,
                     'Med_RT': medianResponseTime,
                     'Max_RT': maxResponseTime,
                     'Min_RT': minResponseTime,
@@ -511,7 +556,10 @@ class Scoring(Util):
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
-                'Mean_RT_I': 'NA',  
+                'Mean_RT_I': 'NA',
+                'Std_RT': 'NA',
+                'Std_RT_C': 'NA',
+                'Std_RT_I': 'NA', 
                 'Med_RT': 'NA',
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
@@ -535,6 +583,9 @@ class Scoring(Util):
                 responseTimes = block.iloc[:, 14].mean()
                 responseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].mean()
                 responseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].mean()
+                stdResponseTimes = block.iloc[:, 14].std()
+                stdResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].std()
+                stdResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].std()
                 medianResponseTime = block.iloc[:, 14].median()
                 medianResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14].median()
                 medianResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].median()
@@ -556,6 +607,9 @@ class Scoring(Util):
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
+                    'Std_RT': stdResponseTimes,
+                    'Std_RT_C': stdResponseCorrect,
+                    'Std_RT_I': stdResponseIncorrect,
                     'Med_RT': medianResponseTime,
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
@@ -571,9 +625,6 @@ class Scoring(Util):
         self.outputToFile(blockData, 'verbSpd_sc')
 
     def olmScore(self):
-
-        # TODO: Add additional scoring methods (e.g. avg distance from correct block)
-        # TODO: Add a matrix representation of the grid showing correct vs incorrect responses
         
         # initialize scoring
         blockDfs = self.initScoring(f'{self.testID}_ObjectLocationMemory')
@@ -622,7 +673,7 @@ class Scoring(Util):
             # score each block (this will be general scores)
             for block in blockDfs:
                 blockType = block.iloc[0, 4]
-                pc = block.iloc[:, 9].item()
+                pc = block.iloc[:, 9].item() / 12
                 responseTimes = block.iloc[:, 7].item()
                 
                 # 12 stimuli total
@@ -715,8 +766,6 @@ class Scoring(Util):
         self.outputToFile(blockData, 'objLocMem_sc')
 
     def suScore(self):
-    
-        # TODO: Check ED and CB calculations
 
         # initialize scoring
         blockDfs = self.initScoring(f'{self.testID}_SpatialUpdating')
@@ -805,7 +854,7 @@ class Scoring(Util):
                 'Block': 'NA',
                 'PC': 'NA',
                 'Prop_Intrusions': 'NA',
-                'Prop_Incorrect_No_Int)': 'NA'
+                'Prop_Incorrect_No_Int': 'NA'
             })
 
         else:
@@ -813,7 +862,8 @@ class Scoring(Util):
             # score each block (this will be general scores)
             for block in blockDfs:
                 blockType = block.iloc[0, 4]
-                pc = block.iloc[:, 24].item() / block.iloc[:, 23].item()
+                pc_attempted = block.iloc[:, 24].item() / block.iloc[:, 23].item()
+                pc_possible = block.iloc[:, 24].item() / 16
                 intrusions = block.iloc[:, 25].item() / block.iloc[:, 23].item()
                 # proportion incorrect (i.e., no intrusions)
                 pi = (block.iloc[:, 23].item() - block.iloc[:, 24].item() - block.iloc[:, 25].item()) / block.iloc[:, 23].item() 
@@ -821,9 +871,10 @@ class Scoring(Util):
                     'ID': self.testID,
                     'Visit': self.currentVisit,
                     'Block': blockType,
-                    'PC': pc,
+                    'PC_Attempted': pc_attempted,
+                    'PC_Total': pc_possible,
                     'Prop_Intrusions': intrusions,
-                    'Prop_Incorrect_No_Int)': pi
+                    'Prop_Incorrect_No_Int': pi
                 })
 
         self.outputToFile(blockData, 'wrdRec_sc')
