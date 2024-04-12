@@ -232,16 +232,25 @@ class Util:
                     filePath = os.path.join(os.getcwd(), file)
                     shutil.move(filePath, newDir)
                     
-    def outputToFile(self, list=list, filename=str):
+    def outputToFile(self, dlist, filename=str):
         
         # Declare output_path
         output_path = os.getcwd()
         
-        # Convert list to dataframe
-        df = pd.DataFrame(list)
+        # If list = list convert to dataframe
+        # if list = dataframe, do nothing
         
+        if type(dlist) == list:
+            # Convert list to dataframe
+            df = pd.DataFrame(dlist)
+        else:
+            df = dlist
+            
         # Replace NaN values with 'NA'
         df.fillna(value="NA", inplace=True)
+        
+        # Round all values to 2 decimal places
+        df = df.round(2)
         
         # If override mode is enabled and the File is specified, write dataframe to specified file type
         if self.overrideBool == True and self.fileOverride != []:
@@ -266,16 +275,27 @@ class Util:
         
         # run the default scoring
         self.fsScore()
+        self.fsScore_long()
         self.luScore()
+        self.luScore_long()
         self.msScore()
+        self.msScore_long()
         self.nmScore()
+        self.nmScore_long()
         self.nbScore()
+        self.nbScore_long()
         self.nsScore()
+        self.nsScore_long()
         self.stScore()
+        self.stScore_long()
         self.vsScore()
+        self.vsScore_long()
         self.olmScore()
+        self.olmScore_long()
         self.suScore()
+        self.suScore_long()
         self.wrScore()
+        self.wrScore_long()
         
     def runOverride(self, overrideList):  # Only called if test names are overridden
         

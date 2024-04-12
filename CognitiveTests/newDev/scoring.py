@@ -1,5 +1,6 @@
 from util import Util
 import numpy as np
+import pandas as pd
 
 
 class Scoring(Util):
@@ -8,6 +9,8 @@ class Scoring(Util):
 
     def fsScore(self):
 
+        # WIDE FORMAT OUTPUT
+        
         # initialize scoring
         blockDfs = self.initScoring(f'{self.testID}_FiguralSpeed')
         
@@ -21,8 +24,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
-                'PC (Same)': 'NA',
-                'PC (Different)': 'NA',
+                'PC_Same': 'NA',
+                'PC_Different': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
@@ -34,11 +37,41 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
+                'Mean_RT_Same': 'NA',
+                'Mean_RT_Same_C': 'NA',
+                'Mean_RT_Same_I': 'NA',
+                'Mean_RT_Different': 'NA',
+                'Mean_RT_Different_C': 'NA',
+                'Mean_RT_Different_I': 'NA',
+                'Std_RT_Same': 'NA',
+                'Std_RT_Same_C': 'NA',
+                'Std_RT_Same_I': 'NA',
+                'Std_RT_Different': 'NA',
+                'Std_RT_Different_C': 'NA',
+                'Std_RT_Different_I': 'NA',
+                'Med_RT_Same': 'NA',
+                'Med_RT_Same_C': 'NA',
+                'Med_RT_Same_I': 'NA',
+                'Med_RT_Different': 'NA',
+                'Med_RT_Different_C': 'NA',
+                'Med_RT_Different_I': 'NA',
+                'Max_RT_Same': 'NA',
+                'Max_RT_Same_C': 'NA',
+                'Max_RT_Same_I': 'NA',
+                'Max_RT_Different': 'NA',
+                'Max_RT_Different_C': 'NA',
+                'Max_RT_Different_I': 'NA',
+                'Min_RT_Same': 'NA',
+                'Min_RT_Same_C': 'NA',
+                'Min_RT_Same_I': 'NA',
+                'Min_RT_Different': 'NA',
+                'Min_RT_Different_C': 'NA',
+                'Min_RT_Different_I': 'NA',
                 'Num_0': 'NA'
             })
 
@@ -65,6 +98,36 @@ class Scoring(Util):
                 minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
                 minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                responseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].mean()
+                responseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                responseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].mean()
+                responseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                stdResponseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].std()
+                stdResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                stdResponseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].std()
+                stdResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                medianResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].median()
+                medianResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                medianResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].median()
+                medianResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                maxResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].max()
+                maxResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                maxResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].max()
+                maxResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                minResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
                 
                 blockData.append({
@@ -72,8 +135,8 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockType,
                     'PC': pc,
-                    'PC (Same)': pcSame,
-                    'PC (Different)': pcDifferent,
+                    'PC_Same': pcSame,
+                    'PC_Different': pcDifferent,
                     'Trials': block.iloc[:, 13].count(),
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
@@ -85,16 +148,90 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
+                    'Mean_RT_Same': responseTimesSame,
+                    'Mean_RT_Same_C': responseCorrectSame,
+                    'Mean_RT_Same_I': responseIncorrectSame,
+                    'Mean_RT_Different': responseTimesDifferent,
+                    'Mean_RT_Different_C': responseCorrectDifferent,
+                    'Mean_RT_Different_I': responseIncorrectDifferent,
+                    'Std_RT_Same': stdResponseTimesSame,
+                    'Std_RT_Same_C': stdResponseCorrectSame,
+                    'Std_RT_Same_I': stdResponseIncorrectSame,
+                    'Std_RT_Different': stdResponseTimesDifferent,
+                    'Std_RT_Different_C': stdResponseCorrectDifferent,
+                    'Std_RT_Different_I': stdResponseIncorrectDifferent,
+                    'Med_RT_Same': medianResponseTimeSame,
+                    'Med_RT_Same_C': medianResponseCorrectSame,
+                    'Med_RT_Same_I': medianResponseIncorrectSame,
+                    'Med_RT_Different': medianResponseTimeDifferent,
+                    'Med_RT_Different_C': medianResponseCorrectDifferent,
+                    'Med_RT_Different_I': medianResponseIncorrectDifferent,
+                    'Max_RT_Same': maxResponseTimeSame,
+                    'Max_RT_Same_C': maxResponseCorrectSame,
+                    'Max_RT_Same_I': maxResponseIncorrectSame,
+                    'Max_RT_Different': maxResponseTimeDifferent,
+                    'Max_RT_Different_C': maxResponseCorrectDifferent,
+                    'Max_RT_Different_I': maxResponseIncorrectDifferent,
+                    'Min_RT_Same': minResponseTimeSame,
+                    'Min_RT_Same_C': minResponseCorrectSame,
+                    'Min_RT_Same_I': minResponseIncorrectSame,
+                    'Min_RT_Different': minResponseTimeDifferent,
+                    'Min_RT_Different_C': minResponseCorrectDifferent,
+                    'Min_RT_Different_I': minResponseIncorrectDifferent,
                     'Num_0': numZeroInputs
                 })
-
+                
         self.outputToFile(blockData, 'figSpd_sc')
-
+        
+    def fsScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_FiguralSpeed')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Same_Diff': 'NA',
+                'Stimuli_1': 'NA',
+                'Stimuli_2': 'NA',
+                'Correct': 'NA',
+                'Response': 'NA',
+                'Accuracy': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 6, 7, 15, 16, 17, 18, 19, 20]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Same_Diff', 'Stimuli_1', 'Stimuli_2', 'Correct', 'Response', 'Accuracy', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'figSpd_sc_long')
+        
     def luScore(self):
 
         # initialize scoring
@@ -112,6 +249,7 @@ class Scoring(Util):
                 'PC': 'NA',
                 'Mean_Streak': 'NA',
                 'Trials': 'NA',
+                'Mean_RT': 'NA'
             })
 
         else:
@@ -127,10 +265,58 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockName,
                     'PC': pc,
-                    'Trials': totalTrials
+                    'Trials': totalTrials,
+                    'Mean_RT': 'NA'
                 })
 
         self.outputToFile(blockData, 'letUp_sc')
+    
+    def luScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_LetterUpdating')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Correct_1': 'NA',
+                'Correct_2': 'NA',
+                'Correct_3': 'NA',
+                'Response_1': 'NA',
+                'Response_2': 'NA',
+                'Response_3': 'NA',
+                'Accuracy_1': 'NA',
+                'Accuracy_2': 'NA',
+                'Accuracy_3': 'NA',
+                'Prop_Correct': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 5, 6, 7, 8, 19, 20, 21, 22, 23, 24]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Correct_1', 'Correct_2', 'Correct_3', 'Response_1', 'Response_2', 'Response_3', 'Accuracy_1', 'Accuracy_2', 'Accuracy_3', 'Prop_Correct']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'letUp_sc_long')
 
     def msScore(self):
 
@@ -158,10 +344,10 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
                 'Num_0': 'NA'
             })
@@ -206,15 +392,59 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
                     'Num_0': numZeroInputs
                 })
 
         self.outputToFile(blockData, 'motSpd_sc')
+        
+    def msScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_MotoricSpeed')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Position_Darkened': 'NA',
+                'Correct_Input': 'NA',
+                'Position_Response': 'NA',
+                'Response_Input': 'NA',
+                'RT': 'NA',
+                'Accuracy': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 4, 6, 7, 8, 16, 17, 18, 19, 20, 21]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Position_Darkened', 'Correct_Input', 'Position_Response', 'Response_Input', 'RT', 'Accuracy']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'motSpd_sc_long')
 
     def nmScore(self):
 
@@ -242,10 +472,10 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
                 'Num_0': 'NA'
             })
@@ -290,15 +520,57 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
                     'Num_0': numZeroInputs
                 })
 
         self.outputToFile(blockData, 'numMem_sc')
+
+    def nmScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_NumberMemory')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Correct_Input': 'NA',
+                'Stimulus': 'NA',
+                'Response_Input': 'NA',
+                'Accuracy': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 5, 6, 12, 13, 14, 15, 16, 17]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Correct_Input', 'Stimulus', 'Response_Input', 'Accuracy', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'numMem_sc_long')
 
     # this test has a different block format and the column is 6 instead of 5
     def nbScore(self):
@@ -327,10 +599,10 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
                 'Num_0': 'NA'
             })
@@ -360,9 +632,9 @@ class Scoring(Util):
                 minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
                 minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                
                 numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
                 
-
                 blockData.append({
                     'ID': self.testID,
                     'Visit': self.currentVisit,
@@ -380,15 +652,58 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
                     'Num_0': numZeroInputs
                 })
 
         self.outputToFile(blockData, 'numNB_sc')
+        
+    def nbScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_Numerical_nBack')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Stimuli': 'NA',
+                'Correct_Input': 'NA',
+                'Response_Input': 'NA',
+                'Accuracy': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 4, 7, 8, 9, 15, 16, 17, 18, 19, 20]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Stimuli', 'Correct_Input', 'Response_Input', 'Accuracy', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'numNB_sc_long')
 
     def nsScore(self):
     
@@ -405,8 +720,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
-                'PC (Same)': 'NA',
-                'PC (Different)': 'NA',
+                'PC_Same': 'NA',
+                'PC_Different': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
@@ -418,11 +733,41 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
+                'Mean_RT_Same': 'NA',
+                'Mean_RT_Same_C': 'NA',
+                'Mean_RT_Same_I': 'NA',
+                'Mean_RT_Different': 'NA',
+                'Mean_RT_Different_C': 'NA',
+                'Mean_RT_Different_I': 'NA',
+                'Std_RT_Same': 'NA',
+                'Std_RT_Same_C': 'NA',
+                'Std_RT_Same_I': 'NA',
+                'Std_RT_Different': 'NA',
+                'Std_RT_Different_C': 'NA',
+                'Std_RT_Different_I': 'NA',
+                'Med_RT_Same': 'NA',
+                'Med_RT_Same_C': 'NA',
+                'Med_RT_Same_I': 'NA',
+                'Med_RT_Different': 'NA',
+                'Med_RT_Different_C': 'NA',
+                'Med_RT_Different_I': 'NA',
+                'Max_RT_Same': 'NA',
+                'Max_RT_Same_C': 'NA',
+                'Max_RT_Same_I': 'NA',
+                'Max_RT_Different': 'NA',
+                'Max_RT_Different_C': 'NA',
+                'Max_RT_Different_I': 'NA',
+                'Min_RT_Same': 'NA',
+                'Min_RT_Same_C': 'NA',
+                'Min_RT_Same_I': 'NA',
+                'Min_RT_Different': 'NA',
+                'Min_RT_Different_C': 'NA',
+                'Min_RT_Different_I': 'NA',
                 'Num_0': 'NA'
             })
 
@@ -451,6 +796,36 @@ class Scoring(Util):
                 minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
                 minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                responseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].mean()
+                responseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                responseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].mean()
+                responseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                stdResponseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].std()
+                stdResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                stdResponseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].std()
+                stdResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                medianResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].median()
+                medianResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                medianResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].median()
+                medianResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                maxResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].max()
+                maxResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                maxResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].max()
+                maxResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                minResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
 
                 blockData.append({
@@ -458,8 +833,8 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockType,
                     'PC': pc,
-                    'PC (Same)': pcSame,
-                    'PC (Different)': pcDifferent,
+                    'PC_Same': pcSame,
+                    'PC_Different': pcDifferent,
                     'Trials': totalCorrect,
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
@@ -471,15 +846,90 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
+                    'Mean_RT_Same': responseTimesSame,
+                    'Mean_RT_Same_C': responseCorrectSame,
+                    'Mean_RT_Same_I': responseIncorrectSame,
+                    'Mean_RT_Different': responseTimesDifferent,
+                    'Mean_RT_Different_C': responseCorrectDifferent,
+                    'Mean_RT_Different_I': responseIncorrectDifferent,
+                    'Std_RT_Same': stdResponseTimesSame,
+                    'Std_RT_Same_C': stdResponseCorrectSame,
+                    'Std_RT_Same_I': stdResponseIncorrectSame,
+                    'Std_RT_Different': stdResponseTimesDifferent,
+                    'Std_RT_Different_C': stdResponseCorrectDifferent,
+                    'Std_RT_Different_I': stdResponseIncorrectDifferent,
+                    'Med_RT_Same': medianResponseTimeSame,
+                    'Med_RT_Same_C': medianResponseCorrectSame,
+                    'Med_RT_Same_I': medianResponseIncorrectSame,
+                    'Med_RT_Different': medianResponseTimeDifferent,
+                    'Med_RT_Different_C': medianResponseCorrectDifferent,
+                    'Med_RT_Different_I': medianResponseIncorrectDifferent,
+                    'Max_RT_Same': maxResponseTimeSame,
+                    'Max_RT_Same_C': maxResponseCorrectSame,
+                    'Max_RT_Same_I': maxResponseIncorrectSame,
+                    'Max_RT_Different': maxResponseTimeDifferent,
+                    'Max_RT_Different_C': maxResponseCorrectDifferent,
+                    'Max_RT_Different_I': maxResponseIncorrectDifferent,
+                    'Min_RT_Same': minResponseTimeSame,
+                    'Min_RT_Same_C': minResponseCorrectSame,
+                    'Min_RT_Same_I': minResponseIncorrectSame,
+                    'Min_RT_Different': minResponseTimeDifferent,
+                    'Min_RT_Different_C': minResponseCorrectDifferent,
+                    'Min_RT_Different_I': minResponseIncorrectDifferent,
                     'Num_0': numZeroInputs
                 })
 
         self.outputToFile(blockData, 'numSpd_sc')
+        
+    def nsScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_NumericalSpeed')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Same_Diff': 'NA',
+                'Stimuli_1': 'NA',
+                'Stimuli_2': 'NA',
+                'Correct_Input': 'NA',
+                'Response_Input': 'NA',
+                'Accuracy': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 6, 7, 15, 16, 7, 17, 18, 19, 20]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Same_Diff', 'Stimuli_1', 'Stimuli_2', 'Correct_Input', 'Response_Input', 'Accuracy', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'numSpd_sc_long')
 
     def stScore(self):
     
@@ -536,6 +986,45 @@ class Scoring(Util):
 
         self.outputToFile(blockData, 'spdTab_sc')
 
+    def stScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_SpeedTabbing')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Presses': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Presses', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'spdTab_sc_long')
+        
     def vsScore(self):
 
         # initialize scoring
@@ -551,8 +1040,8 @@ class Scoring(Util):
                 'Visit': self.currentVisit,
                 'Block': 'NA',
                 'PC': 'NA',
-                'PC (Same)': 'NA',
-                'PC (Different)': 'NA',
+                'PC_Same': 'NA',
+                'PC_Different': 'NA',
                 'Trials': 'NA',
                 'Mean_RT': 'NA',
                 'Mean_RT_C': 'NA',
@@ -564,11 +1053,41 @@ class Scoring(Util):
                 'Med_RT_C': 'NA',
                 'Med_RT_I': 'NA',
                 'Max_RT': 'NA',
-                'Min_RT': 'NA',
                 'Max_RT_C': 'NA',
-                'Min_RT_C': 'NA',
                 'Max_RT_I': 'NA',
+                'Min_RT': 'NA',
+                'Min_RT_C': 'NA',
                 'Min_RT_I': 'NA',
+                'Mean_RT_Same': 'NA',
+                'Mean_RT_Same_C': 'NA',
+                'Mean_RT_Same_I': 'NA',
+                'Mean_RT_Different': 'NA',
+                'Mean_RT_Different_C': 'NA',
+                'Mean_RT_Different_I': 'NA',
+                'Std_RT_Same': 'NA',
+                'Std_RT_Same_C': 'NA',
+                'Std_RT_Same_I': 'NA',
+                'Std_RT_Different': 'NA',
+                'Std_RT_Different_C': 'NA',
+                'Std_RT_Different_I': 'NA',
+                'Med_RT_Same': 'NA',
+                'Med_RT_Same_C': 'NA',
+                'Med_RT_Same_I': 'NA',
+                'Med_RT_Different': 'NA',
+                'Med_RT_Different_C': 'NA',
+                'Med_RT_Different_I': 'NA',
+                'Max_RT_Same': 'NA',
+                'Max_RT_Same_C': 'NA',
+                'Max_RT_Same_I': 'NA',
+                'Max_RT_Different': 'NA',
+                'Max_RT_Different_C': 'NA',
+                'Max_RT_Different_I': 'NA',
+                'Min_RT_Same': 'NA',
+                'Min_RT_Same_C': 'NA',
+                'Min_RT_Same_I': 'NA',
+                'Min_RT_Different': 'NA',
+                'Min_RT_Different_C': 'NA',
+                'Min_RT_Different_I': 'NA',
                 'Num_0': 'NA'
             })
 
@@ -595,6 +1114,36 @@ class Scoring(Util):
                 minResponseCorrect = block[block.iloc[:, 13] == 1].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 maxResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14].max()
                 minResponseIncorrect = block[block.iloc[:, 13] == 0].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                responseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].mean()
+                responseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                responseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].mean()
+                responseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].mean()
+                responseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].mean()
+                stdResponseTimesSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].std()
+                stdResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                stdResponseTimesDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].std()
+                stdResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].std()
+                stdResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].std()
+                medianResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].median()
+                medianResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                medianResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].median()
+                medianResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].median()
+                medianResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].median()
+                maxResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14].max()
+                maxResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                maxResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14].max()
+                maxResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14].max()
+                maxResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14].max()
+                minResponseTimeSame = block.loc[block.iloc[:, 8] == 1, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectSame = block.loc[(block.iloc[:, 8] == 1) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseTimeDifferent = block.loc[block.iloc[:, 8] == 2, :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseCorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 1), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
+                minResponseIncorrectDifferent = block.loc[(block.iloc[:, 8] == 2) & (block.iloc[:, 13] == 0), :].iloc[:, 14][block.iloc[:, 14] >= 200].min()
                 numZeroInputs = block[block.iloc[:, 14] == 0].iloc[:, 14].count()
                 
                 blockData.append({
@@ -602,8 +1151,8 @@ class Scoring(Util):
                     'Visit': self.currentVisit,
                     'Block': blockType,
                     'PC': pc,
-                    'PC (Same)': pcSame,
-                    'PC (Different)': pcDifferent,
+                    'PC_Same': pcSame,
+                    'PC_Different': pcDifferent,
                     'Mean_RT': responseTimes,
                     'Mean_RT_C': responseCorrect,
                     'Mean_RT_I': responseIncorrect,
@@ -614,15 +1163,90 @@ class Scoring(Util):
                     'Med_RT_C': medianResponseCorrect,
                     'Med_RT_I': medianResponseIncorrect,
                     'Max_RT': maxResponseTime,
-                    'Min_RT': minResponseTime,
                     'Max_RT_C': maxResponseCorrect,
-                    'Min_RT_C': minResponseCorrect,
                     'Max_RT_I': maxResponseIncorrect,
+                    'Min_RT': minResponseTime,
+                    'Min_RT_C': minResponseCorrect,
                     'Min_RT_I': minResponseIncorrect,
+                    'Mean_RT_Same': responseTimesSame,
+                    'Mean_RT_Same_C': responseCorrectSame,
+                    'Mean_RT_Same_I': responseIncorrectSame,
+                    'Mean_RT_Different': responseTimesDifferent,
+                    'Mean_RT_Different_C': responseCorrectDifferent,
+                    'Mean_RT_Different_I': responseIncorrectDifferent,
+                    'Std_RT_Same': stdResponseTimesSame,
+                    'Std_RT_Same_C': stdResponseCorrectSame,
+                    'Std_RT_Same_I': stdResponseIncorrectSame,
+                    'Std_RT_Different': stdResponseTimesDifferent,
+                    'Std_RT_Different_C': stdResponseCorrectDifferent,
+                    'Std_RT_Different_I': stdResponseIncorrectDifferent,
+                    'Med_RT_Same': medianResponseTimeSame,
+                    'Med_RT_Same_C': medianResponseCorrectSame,
+                    'Med_RT_Same_I': medianResponseIncorrectSame,
+                    'Med_RT_Different': medianResponseTimeDifferent,
+                    'Med_RT_Different_C': medianResponseCorrectDifferent,
+                    'Med_RT_Different_I': medianResponseIncorrectDifferent,
+                    'Max_RT_Same': maxResponseTimeSame,
+                    'Max_RT_Same_C': maxResponseCorrectSame,
+                    'Max_RT_Same_I': maxResponseIncorrectSame,
+                    'Max_RT_Different': maxResponseTimeDifferent,
+                    'Max_RT_Different_C': maxResponseCorrectDifferent,
+                    'Max_RT_Different_I': maxResponseIncorrectDifferent,
+                    'Min_RT_Same': minResponseTimeSame,
+                    'Min_RT_Same_C': minResponseCorrectSame,
+                    'Min_RT_Same_I': minResponseIncorrectSame,
+                    'Min_RT_Different': minResponseTimeDifferent,
+                    'Min_RT_Different_C': minResponseCorrectDifferent,
+                    'Min_RT_Different_I': minResponseIncorrectDifferent,
                     'Num_0': numZeroInputs
                 })
 
         self.outputToFile(blockData, 'verbSpd_sc')
+
+    def vsScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_VerbalSpeed')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Same_Diff': 'NA',
+                'Stimuli_1': 'NA',
+                'Stimuli_2': 'NA',
+                'Correct_Input': 'NA',
+                'Response_Input': 'NA',
+                'Accuracy': 'NA',
+                'RT': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 6, 7, 15, 16, 17, 18, 19, 20]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Same_Diff', 'Stimuli_1', 'Stimuli_2', 'Correct_Input', 'Response_Input', 'Accuracy', 'RT']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'verbSpd_sc_long')
 
     def olmScore(self):
         
@@ -765,6 +1389,112 @@ class Scoring(Util):
 
         self.outputToFile(blockData, 'objLocMem_sc')
 
+    def olmScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_ObjectLocationMemory')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'RT': 'NA',
+                'Total_Possible': 'NA',
+                'Prop_Correct': 'NA',
+                'Num_Stimuli_1': 'NA',
+                'Row_Coord_Stimuli_1': 'NA',
+                'Col_Coord_Stimuli_1': 'NA',
+                'Accuracy_Stimuli_1': 'NA',
+                'Num_Stimuli_2': 'NA',
+                'Row_Coord_Stimuli_2': 'NA',
+                'Col_Coord_Stimuli_2': 'NA',
+                'Accuracy_Stimuli_2': 'NA',
+                'Num_Stimuli_3': 'NA',
+                'Row_Coord_Stimuli_3': 'NA',
+                'Col_Coord_Stimuli_3': 'NA',
+                'Accuracy_Stimuli_3': 'NA',
+                'Num_Stimuli_4': 'NA',
+                'Row_Coord_Stimuli_4': 'NA',
+                'Col_Coord_Stimuli_4': 'NA',
+                'Accuracy_Stimuli_4': 'NA',
+                'Num_Stimuli_5': 'NA',
+                'Row_Coord_Stimuli_5': 'NA',
+                'Col_Coord_Stimuli_5': 'NA',
+                'Accuracy_Stimuli_5': 'NA',
+                'Num_Stimuli_6': 'NA',
+                'Row_Coord_Stimuli_6': 'NA',
+                'Col_Coord_Stimuli_6': 'NA',
+                'Accuracy_Stimuli_6': 'NA',
+                'Num_Stimuli_7': 'NA',
+                'Row_Coord_Stimuli_7': 'NA',
+                'Col_Coord_Stimuli_7': 'NA',
+                'Accuracy_Stimuli_7': 'NA',
+                'Num_Stimuli_8': 'NA',
+                'Row_Coord_Stimuli_8': 'NA',
+                'Col_Coord_Stimuli_8': 'NA',
+                'Accuracy_Stimuli_8': 'NA',
+                'Num_Stimuli_9': 'NA',
+                'Row_Coord_Stimuli_9': 'NA',
+                'Col_Coord_Stimuli_9': 'NA',
+                'Accuracy_Stimuli_9': 'NA',
+                'Num_Stimuli_10': 'NA',
+                'Row_Coord_Stimuli_10': 'NA',
+                'Col_Coord_Stimuli_10': 'NA',
+                'Accuracy_Stimuli_10': 'NA',
+                'Num_Stimuli_11': 'NA',
+                'Row_Coord_Stimuli_11': 'NA',
+                'Col_Coord_Stimuli_11': 'NA',
+                'Accuracy_Stimuli_11': 'NA',
+                'Num_Stimuli_12': 'NA',
+                'Row_Coord_Stimuli_12': 'NA',
+                'Col_Coord_Stimuli_12': 'NA',
+                'Accuracy_Stimuli_12': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete columns 10 to 63, columns
+            blockDfs.drop(blockDfs.columns[10:60], axis=1, inplace=True)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 5, 6]], axis=1, inplace=True)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59, 64, 65, 66, 67, 68, 69]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'RT', 'Total_Possible', 'Prop_Correct', 
+                                'Num_Stimuli_1', 'Row_Coord_Stimuli_1', 'Col_Coord_Stimuli_1', 'Accuracy_Stimuli_1', 
+                                'Num_Stimuli_2', 'Row_Coord_Stimuli_2', 'Col_Coord_Stimuli_2', 'Accuracy_Stimuli_2',
+                                'Num_Stimuli_3', 'Row_Coord_Stimuli_3', 'Col_Coord_Stimuli_3', 'Accuracy_Stimuli_3',
+                                'Num_Stimuli_4', 'Row_Coord_Stimuli_4', 'Col_Coord_Stimuli_4', 'Accuracy_Stimuli_4',
+                                'Num_Stimuli_5', 'Row_Coord_Stimuli_5', 'Col_Coord_Stimuli_5', 'Accuracy_Stimuli_5',
+                                'Num_Stimuli_6', 'Row_Coord_Stimuli_6', 'Col_Coord_Stimuli_6', 'Accuracy_Stimuli_6',
+                                'Num_Stimuli_7', 'Row_Coord_Stimuli_7', 'Col_Coord_Stimuli_7', 'Accuracy_Stimuli_7',
+                                'Num_Stimuli_8', 'Row_Coord_Stimuli_8', 'Col_Coord_Stimuli_8', 'Accuracy_Stimuli_8',
+                                'Num_Stimuli_9', 'Row_Coord_Stimuli_9', 'Col_Coord_Stimuli_9', 'Accuracy_Stimuli_9',
+                                'Num_Stimuli_10', 'Row_Coord_Stimuli_10', 'Col_Coord_Stimuli_10', 'Accuracy_Stimuli_10',
+                                'Num_Stimuli_11', 'Row_Coord_Stimuli_11', 'Col_Coord_Stimuli_11', 'Accuracy_Stimuli_11',
+                                'Num_Stimuli_12', 'Row_Coord_Stimuli_12', 'Col_Coord_Stimuli_12', 'Accuracy_Stimuli_12']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'objLocMem_sc_long')
+
     def suScore(self):
 
         # initialize scoring
@@ -788,7 +1518,8 @@ class Scoring(Util):
                 'ED_Grid_3': 'NA',
                 'CB_Grid_1': 'NA',
                 'CB_Grid_2': 'NA',
-                'CB_Grid_3': 'NA'
+                'CB_Grid_3': 'NA',
+                'Mean_RT': 'NA'
             })
 
         else:
@@ -833,11 +1564,72 @@ class Scoring(Util):
                     'ED_Grid_3': cellED['3'],
                     'CB_Grid_1': cellCB['1'],
                     'CB_Grid_2': cellCB['2'],
-                    'CB_Grid_3': cellCB['3']
+                    'CB_Grid_3': cellCB['3'],
+                    'Mean_RT': 'NA'
                 })
 
         self.outputToFile(blockData, 'spatUp_sc')
 
+    def suScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_SpatialUpdating')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Trial_Num': 'NA',
+                'Begin_Grid_1': 'NA',
+                'Begin_Grid_2': 'NA',
+                'Begin_Grid_3': 'NA',
+                'First_Movement_Grid_1': 'NA',
+                'First_Movement_Grid_2': 'NA',
+                'First_Movement_Grid_3': 'NA',
+                'Second_Movement_Grid_1': 'NA',
+                'Second_Movement_Grid_2': 'NA',
+                'Second_Movement_Grid_3': 'NA',
+                'Final_Grid_1': 'NA',
+                'Final_Grid_2': 'NA',
+                'Final_Grid_3': 'NA',
+                'Response_Grid_1': 'NA',
+                'Response_Grid_2': 'NA',
+                'Response_Grid_3': 'NA',
+                'Accuracy_Grid_1': 'NA',
+                'Accuracy_Grid_2': 'NA',
+                'Accuracy_Grid_3': 'NA',
+                'Accuracy_Entire_Trial': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 6, 7, 8, 9, 11, 13, 21, 23, 25, 27, 29, 31, 37, 38, 39, 40, 41, 42]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Trial_Num', 'Begin_Grid_1', 'Begin_Grid_2', 'Begin_Grid_3', 'First_Movement_Grid_1', 'First_Movement_Grid_2',
+                                'First_Movement_Grid_3', 'Second_Movement_Grid_1', 'Second_Movement_Grid_2', 'Second_Movement_Grid_3', 'Final_Grid_1', 
+                                'Final_Grid_2', 'Final_Grid_3', 'Response_Grid_1', 'Response_Grid_2', 'Response_Grid_3', 'Accuracy_Grid_1', 'Accuracy_Grid_2', 
+                                'Accuracy_Grid_3', 'Accuracy_Entire_Trial']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'spatUp_sc_long')
+        
     def wrScore(self):
 
         # initialize scoring
@@ -854,7 +1646,8 @@ class Scoring(Util):
                 'Block': 'NA',
                 'PC': 'NA',
                 'Prop_Intrusions': 'NA',
-                'Prop_Incorrect_No_Int': 'NA'
+                'Prop_Incorrect_No_Int': 'NA',
+                'Mean_RT': 'NA'
             })
 
         else:
@@ -874,7 +1667,67 @@ class Scoring(Util):
                     'PC_Attempted': pc_attempted,
                     'PC_Total': pc_possible,
                     'Prop_Intrusions': intrusions,
-                    'Prop_Incorrect_No_Int': pi
+                    'Prop_Incorrect_No_Int': pi,
+                    'Mean_RT': 'NA'
                 })
 
         self.outputToFile(blockData, 'wrdRec_sc')
+        
+    def wrScore_long(self):
+        
+        # LONG FORMAT OUTPUT
+        # This will be a slightly truncated version of the original file, with only the most important columns
+        
+        # initialize scoring
+        blockDfs = self.initScoring(f'{self.testID}_WordRecall')
+        
+        # If the file was not found, return None
+        # Then output a file with NA values
+        if blockDfs is None:
+            blockData = []
+            blockData.append({
+                'ID': self.testID,
+                'Visit': self.currentVisit,
+                'Block': 'NA',
+                'Stimuli_1': 'NA',
+                'Stimuli_2': 'NA',
+                'Stimuli_3': 'NA',
+                'Stimuli_4': 'NA',
+                'Stimuli_5': 'NA',
+                'Stimuli_6': 'NA',
+                'Stimuli_7': 'NA',
+                'Stimuli_8': 'NA',
+                'Stimuli_9': 'NA',
+                'Stimuli_10': 'NA',
+                'Stimuli_11': 'NA',
+                'Stimuli_12': 'NA',
+                'Stimuli_13': 'NA',
+                'Stimuli_14': 'NA',
+                'Stimuli_15': 'NA',
+                'Stimuli_16': 'NA',
+                'Num_Responses': 'NA',
+                'Num_Correct': 'NA',
+                'Num_Intrusions': 'NA'
+            })
+            
+            blockDfs = pd.DataFrame(blockData)
+        
+        else:
+        
+            # Turn the initial file into a pandas dataframe
+            blockDfs = pd.concat(blockDfs)
+            
+            # Delete unnecessary columns
+            blockDfs = blockDfs.iloc[:, :26]
+            blockDfs.drop(blockDfs.columns[[1, 2, 3, 5, 6]], axis=1, inplace=True)
+            
+            # Label columns
+            blockDfs.columns = ['ID', 'Block', 'Stimuli_1', 'Stimuli_2', 'Stimuli_3', 'Stimuli_4', 'Stimuli_5', 'Stimuli_6', 
+                                'Stimuli_7', 'Stimuli_8', 'Stimuli_9', 'Stimuli_10', 'Stimuli_11', 'Stimuli_12', 'Stimuli_13', 
+                                'Stimuli_14', 'Stimuli_15', 'Stimuli_16', 'Num_Responses', 'Num_Correct', 'Num_Intrusions']
+            
+            # Add visit number as the second column
+            blockDfs.insert(1, 'Visit', self.currentVisit)
+        
+        # output to file
+        self.outputToFile(blockDfs, 'wrdRec_sc_long')
